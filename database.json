@@ -1,0 +1,376 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "$2a$10$Rk2g5wkySDpc51P77fSC8O1TqhO6wcSENp5h15WMUpmi36Y20MiOG",
+      "rol": "admin",
+      "fechaCreacion": "2025-11-07T04:01:13.840Z"
+    },
+    {
+      "id": 2,
+      "username": "cliente",
+      "password": "$2a$10$4P/Ttzmcnt3eqqYsnCvwjuwUCaEETwrwFdYKrsdlpPahyNXir5J2e",
+      "rol": "cliente",
+      "fechaCreacion": "2025-11-07T04:01:13.957Z"
+    },
+    {
+      "id": 3,
+      "username": "pepe",
+      "password": "$2a$10$IIFfXh9BVB57mYf3GYinMutB.y0Tx76xTyhhhjBBJfNHtDGNIaXO6",
+      "rol": "cliente",
+      "fechaCreacion": "2025-11-07T06:09:22.659Z"
+    },
+    {
+      "id": 4,
+      "username": "Julio",
+      "password": "$2a$10$A6F1ax5lczca7c3mLyu4ieovRH/3.r08OJ6nzayJNXHsvXiusZPA6",
+      "rol": "admin",
+      "fechaCreacion": "2025-11-08T02:38:14.960Z"
+    }
+  ],
+  "tubos": [
+    {
+      "id": 1,
+      "nombre": "Tubo PVC 4\"",
+      "almacen": 0,
+      "enviados": 0,
+      "fallas": 0
+    },
+    {
+      "id": 2,
+      "nombre": "Tubo PVC 6\"",
+      "almacen": 100,
+      "enviados": 30,
+      "fallas": 2
+    },
+    {
+      "id": 3,
+      "nombre": "Tubo PVC 8\"",
+      "almacen": 80,
+      "enviados": 20,
+      "fallas": 1
+    },
+    {
+      "id": 4,
+      "nombre": "Tubo Concreto 12\"",
+      "almacen": 60,
+      "enviados": 15,
+      "fallas": 0
+    },
+    {
+      "id": 5,
+      "nombre": "Tubo Concreto 18\"",
+      "almacen": 40,
+      "enviados": 10,
+      "fallas": 1
+    },
+    {
+      "id": 6,
+      "nombre": "Tubo Acero 3\"",
+      "almacen": 200,
+      "enviados": 80,
+      "fallas": 3
+    },
+    {
+      "id": 7,
+      "nombre": "Tubo Acero 4\"",
+      "almacen": 180,
+      "enviados": 70,
+      "fallas": 2
+    },
+    {
+      "id": 8,
+      "nombre": "Tubo Aluminio 2\"",
+      "almacen": 120,
+      "enviados": 40,
+      "fallas": 1
+    },
+    {
+      "id": 9,
+      "nombre": "Tubo Aluminio 3\"",
+      "almacen": 90,
+      "enviados": 25,
+      "fallas": 0
+    },
+    {
+      "id": 10,
+      "nombre": "Tubo Fibra 5\"",
+      "almacen": 70,
+      "enviados": 18,
+      "fallas": 2
+    }
+  ],
+  "historial": [
+    {
+      "fecha": "2025-11-07T04:02:02.952Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T04:02:59.928Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T04:04:33.335Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T04:40:51.870Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T04:50:08.124Z",
+      "usuario": "admin",
+      "accion": "actualizar_tubo",
+      "descripcion": "Actualizado: Tubo PVC 4\"",
+      "datos": {
+        "nombre": "Tubo PVC 4\"",
+        "almacen": 150,
+        "enviados": 5,
+        "fallas": 5
+      }
+    },
+    {
+      "fecha": "2025-11-07T05:50:07.458Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T05:51:51.966Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T06:08:22.471Z",
+      "usuario": "admin",
+      "accion": "exportar_excel",
+      "descripcion": "Exportación completa de datos a Excel"
+    },
+    {
+      "fecha": "2025-11-07T06:09:22.659Z",
+      "usuario": "admin",
+      "accion": "crear_usuario",
+      "descripcion": "Nuevo usuario creado: pepe (cliente)"
+    },
+    {
+      "fecha": "2025-11-07T06:15:28.070Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T06:17:09.995Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T06:17:21.499Z",
+      "usuario": "admin",
+      "accion": "exportar_excel",
+      "descripcion": "Exportación completa de datos a Excel"
+    },
+    {
+      "fecha": "2025-11-07T06:21:44.306Z",
+      "usuario": "pepe",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T06:22:23.169Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T06:22:42.778Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-07T06:36:58.297Z",
+      "usuario": "admin",
+      "accion": "exportar_excel",
+      "descripcion": "Exportación completa de datos a Excel"
+    },
+    {
+      "fecha": "2025-11-08T02:37:11.377Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-08T02:37:39.138Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-08T02:37:46.203Z",
+      "usuario": "admin",
+      "accion": "exportar_excel",
+      "descripcion": "Exportación completa de datos a Excel"
+    },
+    {
+      "fecha": "2025-11-08T02:38:14.960Z",
+      "usuario": "admin",
+      "accion": "crear_usuario",
+      "descripcion": "Nuevo usuario creado: Julio (admin)"
+    },
+    {
+      "fecha": "2025-11-08T02:38:42.836Z",
+      "usuario": "admin",
+      "accion": "actualizar_tubo",
+      "descripcion": "Actualizado: Tubo PVC 4\"",
+      "datos": {
+        "nombre": "Tubo PVC 4\"",
+        "almacen": 0,
+        "enviados": 0,
+        "fallas": 0
+      }
+    },
+    {
+      "fecha": "2025-11-08T02:39:06.116Z",
+      "usuario": "Julio",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T01:38:15.957Z",
+      "usuario": "Julio",
+      "accion": "exportar_excel",
+      "descripcion": "Exportación completa de datos a Excel"
+    },
+    {
+      "fecha": "2025-11-09T02:17:03.863Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T02:19:41.264Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T02:36:33.153Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T02:39:50.094Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T02:41:53.785Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T02:44:08.348Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T02:49:54.306Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T03:13:46.532Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T03:20:33.545Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T05:18:40.346Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:14:21.867Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:27:38.026Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:28:57.137Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:31:10.224Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:50:42.750Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:50:56.060Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:56:22.888Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:57:39.846Z",
+      "usuario": "cliente",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T07:57:48.508Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    },
+    {
+      "fecha": "2025-11-09T08:14:05.873Z",
+      "usuario": "admin",
+      "accion": "login",
+      "descripcion": "Inicio de sesión exitoso"
+    }
+  ]
+}

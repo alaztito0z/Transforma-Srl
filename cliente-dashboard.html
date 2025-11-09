@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Cliente - Sistema de Gestión de Tubos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #27ae60;
+            --accent: #ffffff;
+            --light-bg: #f8f9fa;
+            --dark-text: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --success: #27ae60;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --info: #3498db;
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header y Navegación */
+        header {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: var(--accent);
+            margin-bottom: 4px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-logout {
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-logout:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #2c3e50);
+            color: var(--accent);
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--accent);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--secondary);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.success::before {
+            background: var(--success);
+        }
+        
+        .stat-card.warning::before {
+            background: var(--warning);
+        }
+        
+        .stat-card.info::before {
+            background: var(--info);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .stat-card.success .stat-icon {
+            color: var(--success);
+        }
+        
+        .stat-card.warning .stat-icon {
+            color: var(--warning);
+        }
+        
+        .stat-card.info .stat-icon {
+            color: var(--info);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: var(--accent);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .table-header {
+            background: var(--primary);
+            color: var(--accent);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+        
+        .table-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-text);
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .disponible {
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .fallas {
+            color: var(--error);
+            font-weight: 500;
+        }
+        
+        .enviados {
+            color: var(--warning);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .copyright {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--primary);
+                padding: 1rem 0;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-banner h1 {
+                font-size: 1.5rem;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        /* Mensajes */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+            border-left: 4px solid;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: var(--error);
+            border-left-color: var(--error);
+        }
+
+        .success-message {
+            background: #efc;
+            color: var(--success);
+            border-left-color: var(--success);
+        }
+
+        /* Excel Table Styles */
+        .excel-table-container {
+            max-height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .excel-table {
+            width: 100%;
+            min-width: 800px;
+        }
+
+        .excel-table th {
+            background: #34495e;
+            color: white;
+            position: sticky;
+            top: 0;
+            border: 1px solid #2c3e50;
+        }
+
+        .excel-table td {
+            border: 1px solid #e9ecef;
+        }
+
+        .excel-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .excel-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .last-update {
+            background: #e8f5e8;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--success);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-only-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Deshabilitar selección de texto en la tabla */
+        .excel-table {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .excel-table td, .excel-table th {
+            cursor: default;
+        }
+
+        /* Remover cualquier interacción */
+        .excel-table input, 
+        .excel-table select, 
+        .excel-table button {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="logop.jpg" alt="Logo Empresa" class="logo">
+                <div class="brand-name">Transforma Srl </div>
+            </div>
+            
+            <nav>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                    <a href="cliente-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Panel Cliente</a>
+                </div>
+            </nav>
+            
+            <div class="user-info">
+                <div class="user-badge" id="userBadge">
+                    <i class="fas fa-user"></i> Cargando...
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Mensajes globales -->
+        <div class="message success-message" id="successMsg"></div>
+        <div class="message error-message" id="errorMsg"></div>
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner fade-in">
+            <h1><i class="fas fa-eye"></i> Panel de Visualización - Solo Lectura</h1>
+            <p>Consulta el inventario actualizado - Información de solo visualización</p>
+            <div style="margin-top: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <span class="last-update" id="lastUpdateInfo">
+                    <i class="fas fa-clock"></i> Última actualización: Cargando...
+                </span>
+                <span class="view-only-badge">
+                    <i class="fas fa-lock"></i> Modo solo lectura
+                </span>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card fade-in delay-1">
+                <div class="stat-icon">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="stat-value" id="totalAlmacen">0</div>
+                <div class="stat-label">Total en Almacén</div>
+            </div>
+            
+            <div class="stat-card info fade-in delay-2">
+                <div class="stat-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div class="stat-value" id="totalEnviados">0</div>
+                <div class="stat-label">Total Enviados</div>
+            </div>
+            
+            <div class="stat-card warning fade-in delay-3">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value" id="totalFallas">0</div>
+                <div class="stat-label">Total Fallas</div>
+            </div>
+            
+            <div class="stat-card success fade-in delay-1">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value" id="totalDisponible">0</div>
+                <div class="stat-label">Disponible Real</div>
+            </div>
+        </div>
+
+        <!-- Excel Table Container -->
+        <div class="table-container fade-in delay-2">
+            <div class="table-header">
+                <h2><i class="fas fa-file-excel"></i> Tabla de Inventario - Vista de Cliente</h2>
+                <div class="table-info">
+                    <span><i class="fas fa-info-circle"></i> Solo visualización</span>
+                    <span><i class="fas fa-sync-alt"></i> Actualización automática</span>
+                </div>
+            </div>
+            
+            <div class="excel-table-container">
+                <table class="excel-table" id="excelDataTable">
+                    <thead>
+                        <tr id="excelTableHeader">
+                            <!-- Las columnas se cargarán dinámicamente -->
+                        </tr>
+                    </thead>
+                    <tbody id="excelTableBody">
+                        <!-- Los datos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+                <div id="noDataMessage" class="no-data">
+                    <i class="fas fa-file-excel fa-3x" style="color: #ddd; margin-bottom: 1rem;"></i>
+                    <p>No hay datos disponibles</p>
+                    <p style="font-size: 0.9rem;">Esperando que el administrador cargue los datos del Excel</p>
+                    <p style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">
+                        El administrador debe: 
+                        <br>1. Ir a "Gestión Tubos" 
+                        <br>2. Cargar datos desde el panel admin 
+                        <br>3. Confirmar y publicar para clientes
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="table-container fade-in delay-3">
+            <div class="table-header">
+                <h2><i class="fas fa-info-circle"></i> Información del Sistema</h2>
+            </div>
+            <div style="padding: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <i class="fas fa-eye" style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;"></i>
+                        <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Solo Visualización</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Los datos son de solo lectura para clientes</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;"></i>
+                        <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Sistema Seguro</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Información protegida y confidencial</p>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <i class="fas fa-sync-alt" style="font-size: 2rem; color: var(--secondary); margin-bottom: 0.5rem;"></i>
+                        <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Actualización Automática</h3>
+                        <p style="color: #666; font-size: 0.9rem;">Datos actualizados cada 30 segundos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Sistema de Gestión de Tubos - Transforma Srl </p>
+            <div class="copyright">
+                <p>&copy;  Versión 2.0 | Panel Cliente - Solo Visualización</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Menú hamburguesa
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Mostrar mensajes
+        function showMessage(message, type = 'success') {
+            const messageDiv = type === 'success' ? document.getElementById('successMsg') : document.getElementById('errorMsg');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Verificar autenticación
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            return JSON.parse(user);
+        }
+
+        // Cargar datos del Excel del admin
+        function cargarDatos() {
+            const usuario = checkAuth();
+            if (!usuario) return;
+
+            // Actualizar badge de usuario
+            document.getElementById('userBadge').innerHTML = 
+                `<i class="fas fa-user"></i> ${usuario.username} (Cliente)`;
+
+            console.log('🔍 Buscando datos en localStorage...');
+            
+            // Cargar directamente desde localStorage - BUSCAR EXCEL DATA ORIGINAL
+            const excelData = localStorage.getItem('excelData'); // Datos originales del Excel
+            const ultimaActualizacion = localStorage.getItem('excelTimestamp') || localStorage.getItem('ultimaActualizacionClientes');
+            
+            console.log('Datos encontrados en localStorage:', {
+                excelData: !!excelData,
+                ultimaActualizacion: !!ultimaActualizacion
+            });
+            
+            if (excelData) {
+                console.log('📊 Cargando datos originales del Excel...');
+                try {
+                    const datos = JSON.parse(excelData);
+                    console.log('Datos del Excel:', datos);
+                    
+                    if (datos && datos.length > 0) {
+                        mostrarTablaExcel(datos);
+                        actualizarEstadisticas(datos);
+                        
+                        if (ultimaActualizacion) {
+                            document.getElementById('lastUpdateInfo').innerHTML = 
+                                `<i class="fas fa-clock"></i> Última actualización: ${new Date(ultimaActualizacion).toLocaleString('es-ES')}`;
+                        } else {
+                            document.getElementById('lastUpdateInfo').innerHTML = 
+                                `<i class="fas fa-clock"></i> Última actualización: ${new Date().toLocaleString('es-ES')}`;
+                        }
+                        
+                        showMessage('✅ Tabla del Excel cargada correctamente');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('❌ Error parseando excelData:', error);
+                }
+            }
+            
+            // Si no hay excelData, intentar con datosClientes como fallback
+            const datosClientes = localStorage.getItem('datosClientes');
+            if (datosClientes) {
+                console.log('📊 Cargando datos procesados como fallback...');
+                try {
+                    const datos = JSON.parse(datosClientes);
+                    console.log('Datos procesados:', datos);
+                    
+                    if (datos && datos.length > 0) {
+                        mostrarTablaExcel(datos);
+                        actualizarEstadisticas(datos);
+                        
+                        if (ultimaActualizacion) {
+                            document.getElementById('lastUpdateInfo').innerHTML = 
+                                `<i class="fas fa-clock"></i> Última actualización: ${new Date(ultimaActualizacion).toLocaleString('es-ES')}`;
+                        }
+                        
+                        showMessage('✅ Datos procesados cargados correctamente');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('❌ Error parseando datosClientes:', error);
+                }
+            }
+            
+            console.log('❌ No se encontraron datos válidos en localStorage');
+            mostrarMensajeSinDatos();
+            showMessage('ℹ️ No hay datos disponibles. El administrador debe cargar el Excel.', 'error');
+        }
+
+        // Mostrar la tabla del Excel (solo lectura) - EXACTAMENTE IGUAL QUE GESTIÓN DE TUBOS
+        function mostrarTablaExcel(datos) {
+            const tableHeader = document.getElementById('excelTableHeader');
+            const tableBody = document.getElementById('excelTableBody');
+            const noDataMessage = document.getElementById('noDataMessage');
+
+            // Limpiar tabla
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (!datos || datos.length === 0) {
+                noDataMessage.style.display = 'block';
+                return;
+            }
+
+            noDataMessage.style.display = 'none';
+
+            console.log('📋 Mostrando tabla con datos:', datos);
+
+            // SIEMPRE usar formato array de arrays (como en Gestión de Tubos)
+            if (Array.isArray(datos) && datos.length > 0) {
+                console.log('📊 Formato: Array de arrays (Excel) - MOSTRANDO TABLA EXACTA');
+                mostrarTablaDesdeArray(datos);
+            } else {
+                console.error('❌ Formato de datos no reconocido:', datos);
+                mostrarMensajeSinDatos();
+            }
+        }
+
+        // Mostrar tabla desde array de arrays (formato Excel) - IDÉNTICO A GESTIÓN DE TUBOS
+        function mostrarTablaDesdeArray(datos) {
+            const tableHeader = document.getElementById('excelTableHeader');
+            const tableBody = document.getElementById('excelTableBody');
+
+            // Crear encabezados desde la primera fila (EXACTO como en Gestión de Tubos)
+            const headers = datos[0];
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header || '';
+                th.style.minWidth = '120px';
+                th.style.backgroundColor = '#34495e';
+                th.style.color = 'white';
+                th.style.position = 'sticky';
+                th.style.top = '0';
+                th.style.border = '1px solid #2c3e50';
+                tableHeader.appendChild(th);
+            });
+
+            // Crear filas de datos (EXACTO como en Gestión de Tubos)
+            for (let i = 1; i < datos.length; i++) {
+                const rowData = datos[i];
+                
+                // Saltar filas vacías (igual que en Gestión de Tubos)
+                if (!rowData || rowData.length === 0 || rowData.every(cell => cell === '' || cell === null || cell === undefined)) {
+                    continue;
+                }
+                
+                const tr = document.createElement('tr');
+                
+                // Aplicar estilo de filas alternas (igual que en Gestión de Tubos)
+                if (i % 2 === 0) {
+                    tr.style.backgroundColor = '#f8f9fa';
+                }
+                
+                rowData.forEach((cell, index) => {
+                    const td = document.createElement('td');
+                    
+                    // Formato idéntico al de Gestión de Tubos
+                    td.textContent = cell !== null && cell !== undefined ? cell : '';
+                    td.style.border = '1px solid #e9ecef';
+                    td.style.padding = '1rem';
+                    
+                    // Resaltar números (igual que en Gestión de Tubos)
+                    if (!isNaN(cell) && cell !== '' && cell !== null) {
+                        td.style.textAlign = 'right';
+                        td.style.fontWeight = '500';
+                        td.style.color = '#2c3e50';
+                    }
+                    
+                    // Deshabilitar cualquier interacción
+                    td.style.cursor = 'default';
+                    td.onclick = null;
+                    td.ondblclick = null;
+                    td.oncontextmenu = null;
+                    
+                    tr.appendChild(td);
+                });
+
+                // Efecto hover (igual que en Gestión de Tubos)
+                tr.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#e3f2fd';
+                });
+                
+                tr.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = (i % 2 === 0) ? '#f8f9fa' : 'white';
+                });
+
+                // Deshabilitar interacción en toda la fila
+                tr.style.cursor = 'default';
+                tr.onclick = null;
+                tr.ondblclick = null;
+                tr.oncontextmenu = null;
+                
+                tableBody.appendChild(tr);
+            }
+        }
+
+        // Actualizar estadísticas - MÉTODO MEJORADO
+        function actualizarEstadisticas(datos) {
+            let totalAlmacen = 0;
+            let totalEnviados = 0;
+            let totalFallas = 0;
+            let totalDisponible = 0;
+
+            console.log('📈 Calculando estadísticas desde datos originales...');
+
+            if (Array.isArray(datos) && datos.length > 1) {
+                // Formato array de arrays (Excel)
+                const headers = datos[0].map(h => h.toString().toLowerCase().trim());
+                console.log('Headers encontrados:', headers);
+                
+                // Buscar índices exactos
+                const almacenIndex = headers.findIndex(h => 
+                    h.includes('almacén') || h.includes('stock') || h.includes('cantidad') || h.includes('inventario')
+                );
+                const enviadosIndex = headers.findIndex(h => 
+                    h.includes('enviado') || h.includes('venta') || h.includes('despacho')
+                );
+                const fallasIndex = headers.findIndex(h => 
+                    h.includes('falla') || h.includes('defecto') || h.includes('observación') || h.includes('problema')
+                );
+                const disponibleIndex = headers.findIndex(h => 
+                    h.includes('disponible') || h.includes('real')
+                );
+
+                console.log('Índices encontrados:', { almacenIndex, enviadosIndex, fallasIndex, disponibleIndex });
+
+                // Calcular totales
+                for (let i = 1; i < datos.length; i++) {
+                    const row = datos[i];
+                    if (!row || row.length === 0) continue;
+
+                    if (almacenIndex !== -1 && row[almacenIndex] !== undefined) {
+                        totalAlmacen += parseFloat(row[almacenIndex]) || 0;
+                    }
+                    if (enviadosIndex !== -1 && row[enviadosIndex] !== undefined) {
+                        totalEnviados += parseFloat(row[enviadosIndex]) || 0;
+                    }
+                    if (fallasIndex !== -1 && row[fallasIndex] !== undefined) {
+                        totalFallas += parseFloat(row[fallasIndex]) || 0;
+                    }
+                    if (disponibleIndex !== -1 && row[disponibleIndex] !== undefined) {
+                        totalDisponible += parseFloat(row[disponibleIndex]) || 0;
+                    }
+                }
+
+                // Si no se encontró columna "Disponible", calcularla
+                if (disponibleIndex === -1) {
+                    totalDisponible = totalAlmacen - totalFallas;
+                }
+            }
+
+            console.log('Estadísticas calculadas:', { totalAlmacen, totalEnviados, totalFallas, totalDisponible });
+
+            // Actualizar estadísticas
+            document.getElementById('totalAlmacen').textContent = Math.round(totalAlmacen).toLocaleString();
+            document.getElementById('totalEnviados').textContent = Math.round(totalEnviados).toLocaleString();
+            document.getElementById('totalFallas').textContent = Math.round(totalFallas).toLocaleString();
+            document.getElementById('totalDisponible').textContent = Math.round(totalDisponible).toLocaleString();
+        }
+
+        // Mostrar mensaje cuando no hay datos
+        function mostrarMensajeSinDatos() {
+            document.getElementById('noDataMessage').style.display = 'block';
+            document.getElementById('excelTableHeader').innerHTML = '';
+            document.getElementById('excelTableBody').innerHTML = '';
+            resetearEstadisticas();
+        }
+
+        // Resetear estadísticas
+        function resetearEstadisticas() {
+            document.getElementById('totalAlmacen').textContent = '0';
+            document.getElementById('totalEnviados').textContent = '0';
+            document.getElementById('totalFallas').textContent = '0';
+            document.getElementById('totalDisponible').textContent = '0';
+            document.getElementById('lastUpdateInfo').innerHTML = 
+                '<i class="fas fa-clock"></i> Última actualización: No disponible';
+        }
+
+        // Cerrar sesión
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', cargarDatos);
+        
+        // Actualizar datos automáticamente cada 5 segundos
+        setInterval(cargarDatos, 5000);
+
+        // Escuchar cambios en localStorage (para actualizaciones en tiempo real)
+        window.addEventListener('storage', function(e) {
+            console.log('🔄 Cambio detectado en localStorage:', e.key);
+            if (e.key === 'excelData' || e.key === 'excelTimestamp' || e.key === 'datosClientes') {
+                cargarDatos();
+                showMessage('🔄 Datos actualizados automáticamente');
+            }
+        });
+
+        // Deshabilitar clic derecho en toda la página
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.closest('.excel-table')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        console.log('🔗 Panel Cliente - Modo solo lectura activado');
+        console.log('💡 Mostrando tabla EXACTA del Excel del administrador');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Sistema de Gestión de Tubos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.0.0/dist/handsontable.full.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #27ae60;
+            --accent: #ffffff;
+            --light-bg: #f8f9fa;
+            --dark-text: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --success: #27ae60;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --info: #3498db;
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header y Navegación */
+        header {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: var(--accent);
+            margin-bottom: 4px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #219653;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: var(--accent);
+            padding: 0 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #e9ecef;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-tab.active {
+            border-bottom-color: var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .nav-tab:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--accent);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--secondary);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .stat-card.success::before {
+            background: var(--success);
+        }
+        
+        .stat-card.warning::before {
+            background: var(--warning);
+        }
+        
+        .stat-card.error::before {
+            background: var(--error);
+        }
+        
+        .stat-card.info::before {
+            background: var(--info);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .stat-card.success .stat-icon {
+            color: var(--success);
+        }
+        
+        .stat-card.warning .stat-icon {
+            color: var(--warning);
+        }
+        
+        .stat-card.error .stat-icon {
+            color: var(--error);
+        }
+        
+        .stat-card.info .stat-icon {
+            color: var(--info);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: var(--accent);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .table-header {
+            background: var(--primary);
+            color: var(--accent);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Handsontable Container */
+        .handsontable-container {
+            background: var(--accent);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        #excelContainer {
+            height: 600px;
+            width: 100%;
+            background: white;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-save {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--error);
+            color: white;
+        }
+        
+        input[type="number"], input[type="text"] {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 1rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .copyright {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--primary);
+                padding: 1rem 0;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-tabs {
+                padding: 0 1rem;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .table-actions {
+                justify-content: center;
+            }
+            
+            #excelContainer {
+                height: 400px;
+            }
+        }
+        
+        /* Animaciones */
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        /* Import/Export Section */
+        .import-export-section {
+            background: var(--accent);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .file-input-container {
+            margin: 1.5rem 0;
+            padding: 2rem;
+            border: 2px dashed #ddd;
+            border-radius: var(--radius);
+            background: #f8f9fa;
+        }
+
+        /* Mensajes */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+            border-left: 4px solid;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: var(--error);
+            border-left-color: var(--error);
+        }
+
+        .success-message {
+            background: #efc;
+            color: var(--success);
+            border-left-color: var(--success);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .excel-status {
+            background: #e8f5e8;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Formula Bar */
+        .formula-bar {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .formula-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .cell-address {
+            min-width: 60px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+
+        /* Debug Info */
+        .debug-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        /* Operaciones matemáticas */
+        .math-operations {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .math-btn {
+            padding: 0.4rem 0.8rem;
+            background: var(--info);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .math-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="logop.jpg" alt="Logo Empresa" class="logo">
+                <div class="brand-name">Transforma Srl</div>
+            </div>
+            
+            <nav>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                    <a href="admin-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Panel Admin</a>
+                    <a href="gestion-tubos.html"><i class="fas fa-cog"></i> Gestión Tubos</a>
+                    <a href="historial.html"><i class="fas fa-history"></i> Historial</a>
+                </div>
+            </nav>
+            
+            <div class="user-info">
+                <div class="user-badge" id="userBadge">
+                    <i class="fas fa-user-shield"></i> Cargando...
+                </div>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="nav-tab active" data-tab="inventario">
+            <i class="fas fa-warehouse"></i> Inventario
+        </div>
+        <div class="nav-tab" data-tab="usuarios">
+            <i class="fas fa-users-cog"></i> Gestión de Usuarios
+        </div>
+        <div class="nav-tab" data-tab="exportar">
+            <i class="fas fa-file-export"></i> Exportar/Importar
+        </div>
+        <div class="nav-tab" data-tab="configuracion">
+            <i class="fas fa-cogs"></i> Configuración
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Mensajes globales -->
+        <div class="message success-message" id="successMsg"></div>
+        <div class="message error-message" id="errorMsg"></div>
+
+        <!-- Tab: Inventario -->
+        <div id="inventario" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card fade-in delay-1">
+                    <div class="stat-icon">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <div class="stat-value" id="totalAlmacen">0</div>
+                    <div class="stat-label">Total en Almacén</div>
+                </div>
+                <div class="stat-card success fade-in delay-2">
+                    <div class="stat-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="stat-value" id="totalEnviados">0</div>
+                    <div class="stat-label">Total Enviados</div>
+                </div>
+                <div class="stat-card warning fade-in delay-3">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value" id="totalFallas">0</div>
+                    <div class="stat-label">En Observación</div>
+                </div>
+                <div class="stat-card info fade-in delay-1">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value" id="totalDisponible">0</div>
+                    <div class="stat-label">Disponible Real</div>
+                </div>
+            </div>
+
+            <div class="handsontable-container fade-in delay-2" id="excelTableContainer">
+                <div class="table-header">
+                    <h2><i class="fas fa-table"></i> Excel - Inventario de Tubos</h2>
+                    <div class="table-actions">
+                        <div id="excelStatus" style="display: none;" class="excel-status">
+                            <i class="fas fa-file-excel"></i> <span id="fileName">Archivo cargado</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="guardarExcel()" id="guardarBtn">
+                            <i class="fas fa-save"></i> Guardar Excel
+                        </button>
+                        <button class="btn btn-info" onclick="actualizarEstadisticas()">
+                            <i class="fas fa-sync-alt"></i> Actualizar Estadísticas
+                        </button>
+                        <button class="btn btn-danger" onclick="quitarTabla()" id="quitarTablaBtn">
+                            <i class="fas fa-times"></i> Quitar Tabla
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Barra de fórmulas -->
+                <div class="formula-bar">
+                    <span class="cell-address" id="currentCell">Consola</span>
+                    <input type="text" class="formula-input" id="formulaInput" placeholder="Fórmula o valor..." onkeydown="manejarEntradaFormula(event)">
+                    <button class="btn btn-sm btn-primary" onclick="aplicarFormula()">Aplicar</button>
+                </div>
+                
+                <!-- Operaciones matemáticas -->
+                <div class="math-operations">
+                    <span style="font-weight: bold; margin-right: 10px;">Operaciones:</span>
+                    <button class="math-btn" onclick="ejecutarOperacion('suma')">Suma Columna</button>
+                    <button class="math-btn" onclick="ejecutarOperacion('promedio')">Promedio Columna</button>
+                    <button class="math-btn" onclick="ejecutarOperacion('maximo')">Máximo Columna</button>
+                    <button class="math-btn" onclick="ejecutarOperacion('minimo')">Mínimo Columna</button>
+                    <button class="math-btn" onclick="ejecutarOperacion('contar')">Contar Celdas</button>
+                    <button class="math-btn" onclick="ejecutarOperacion('multiplicar')">Multiplicar Selección</button>
+                    <button class="math-btn" onclick="ejecutarOperacion('dividir')">Dividir Selección</button>
+                </div>
+                
+                <!-- Estado de carga -->
+                <div class="loading" id="excelLoading">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 1rem;">Cargando datos del Excel...</p>
+                </div>
+                
+                <!-- Contenedor de Handsontable -->
+                <div id="excelContainer"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Gestión de Usuarios -->
+        <div id="usuarios" class="tab-content">
+            <div class="table-container fade-in">
+                <div class="table-header">
+                    <h2><i class="fas fa-users-cog"></i> Gestión de Usuarios del Sistema</h2>
+                    <div class="table-actions">
+                        <button class="btn btn-success" onclick="abrirModalNuevoUsuario()">
+                            <i class="fas fa-user-plus"></i> Nuevo Usuario
+                        </button>
+                    </div>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #ddd;">Usuario</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #ddd;">Rol</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #ddd;">Fecha Creación</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #ddd;">Último Acceso</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #ddd;">Estado</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #ddd;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios">
+                        <!-- Los datos se cargarán con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab: Exportar/Importar -->
+        <div id="exportar" class="tab-content">
+            <div class="import-export-section fade-in">
+                <h2><i class="fas fa-file-export"></i> Exportación de Datos</h2>
+                <p>Descarga el inventario actual en formato Excel</p>
+                <button class="btn btn-primary" onclick="exportarExcel()" style="margin-top: 1rem;">
+                    <i class="fas fa-file-excel"></i> Exportar Excel
+                </button>
+            </div>
+
+            <div class="import-export-section fade-in delay-1">
+                <h2><i class="fas fa-file-import"></i> Importación de Datos</h2>
+                <p>Carga un archivo Excel para trabajar con él</p>
+                
+                <div class="file-input-container">
+                    <input type="file" id="fileInput" accept=".xlsx, .xls" style="margin-bottom: 1rem;">
+                    <br>
+                    <button class="btn btn-success" onclick="importarExcel()">
+                        <i class="fas fa-upload"></i> Importar Archivo Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Configuración -->
+        <div id="configuracion" class="tab-content">
+            <div class="table-container fade-in">
+                <div class="table-header">
+                    <h2><i class="fas fa-cogs"></i> Configuración del Sistema</h2>
+                </div>
+                <div style="padding: 2rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                        <div style="background: #f8f9fa; padding: 1.5rem; border-radius: var(--radius);">
+                            <h3><i class="fas fa-key"></i> Gestión de Contraseñas</h3>
+                            <div class="form-group">
+                                <label>Usuario:</label>
+                                <select id="usuarioSelect" class="form-control">
+                                    <option value="admin">Administrador</option>
+                                    <option value="cliente">Cliente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nueva Contraseña:</label>
+                                <input type="password" id="nuevaPassword" class="form-control" placeholder="Nueva contraseña">
+                            </div>
+                            <button class="btn btn-primary" onclick="cambiarPassword()" style="width: 100%;">
+                                <i class="fas fa-save"></i> Cambiar Contraseña
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para nuevo usuario -->
+    <div id="modalNuevoUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Crear Nuevo Usuario</h3>
+                <button class="close-modal" onclick="cerrarModal('modalNuevoUsuario')">&times;</button>
+            </div>
+            <form id="formNuevoUsuario" onsubmit="crearNuevoUsuario(event)">
+                <div class="form-group">
+                    <label>Nombre de Usuario:</label>
+                    <input type="text" id="nuevoUsername" class="form-control" required minlength="3" maxlength="20">
+                    <small style="color: #666; font-size: 0.8rem;">Mínimo 3 caracteres, solo letras y números</small>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="nuevoPassword" class="form-control" required minlength="4">
+                    <small style="color: #666; font-size: 0.8rem;">Mínimo 4 caracteres</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña:</label>
+                    <input type="password" id="confirmarPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Rol:</label>
+                    <select id="nuevoRol" class="form-control" required>
+                        <option value="">Seleccionar rol</option>
+                        <option value="admin">Administrador</option>
+                        <option value="cliente">Cliente</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-cancel" onclick="cerrarModal('modalNuevoUsuario')">Cancelar</button>
+                    <button type="submit" class="btn btn-save">Crear Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div id="modalEditarUsuario" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Editar Usuario</h3>
+                <button class="close-modal" onclick="cerrarModal('modalEditarUsuario')">&times;</button>
+            </div>
+            <form id="formEditarUsuario" onsubmit="editarUsuario(event)">
+                <input type="hidden" id="editarUsername">
+                <div class="form-group">
+                    <label>Nueva Contraseña (dejar vacío para no cambiar):</label>
+                    <input type="password" id="editarPassword" class="form-control">
+                    <small style="color: #666; font-size: 0.8rem;">Mínimo 4 caracteres</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña:</label>
+                    <input type="password" id="editarConfirmarPassword" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Rol:</label>
+                    <select id="editarRol" class="form-control" required>
+                        <option value="admin">Administrador</option>
+                        <option value="cliente">Cliente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado:</label>
+                    <select id="editarEstado" class="form-control" required>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-cancel" onclick="cerrarModal('modalEditarUsuario')">Cancelar</button>
+                    <button type="submit" class="btn btn-save">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Sistema de Gestión de Tubos - Transforma Srl</p>
+            <div class="copyright">
+                <p>&copy; Versión 2.0 | Panel Administrador</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Handsontable y HyperFormula -->
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@14.0.0/dist/handsontable.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Variables globales
+        let hot;
+        let currentFile = null;
+        let usuarios = [];
+        const API_BASE_URL = 'http://localhost:3002';
+
+        // Configuración de mapeo de columnas para estadísticas
+        const columnMapping = {
+            stock: ['stock', 'cantidad', 'inventario', 'existencia'],
+            enviados: ['enviados', 'ventas', 'salidas', 'despachados'],
+            fallas: ['fallas', 'defectuosos', 'observacion', 'problemas']
+        };
+
+        // =============================================
+        // GESTIÓN DE USUARIOS - CÓDIGO CORREGIDO
+        // =============================================
+
+        // Inicializar usuarios por defecto si no existen
+        function inicializarUsuarios() {
+            const usuariosGuardados = localStorage.getItem('usuarios');
+            
+            if (!usuariosGuardados) {
+                // Usuarios por defecto
+                usuarios = [
+                    {
+                        username: 'admin',
+                        password: 'admin123',
+                        rol: 'admin',
+                        fechaCreacion: new Date().toISOString(),
+                        ultimoAcceso: new Date().toISOString(),
+                        estado: 'activo'
+                    },
+                    {
+                        username: 'cliente',
+                        password: 'cliente123',
+                        rol: 'cliente',
+                        fechaCreacion: new Date().toISOString(),
+                        ultimoAcceso: new Date().toISOString(),
+                        estado: 'activo'
+                    }
+                ];
+                guardarUsuariosEnStorage();
+            } else {
+                usuarios = JSON.parse(usuariosGuardados);
+            }
+        }
+
+        // Guardar usuarios en localStorage
+        function guardarUsuariosEnStorage() {
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+        }
+
+        // Cargar tabla de usuarios
+        function cargarTablaUsuarios() {
+            const tabla = document.getElementById('tablaUsuarios');
+            tabla.innerHTML = '';
+
+            if (usuarios.length === 0) {
+                tabla.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 2rem; text-align: center; color: #666;">
+                            <i class="fas fa-users-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>No hay usuarios registrados</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            usuarios.forEach(usuario => {
+                const fila = document.createElement('tr');
+                fila.style.borderBottom = '1px solid #e9ecef';
+                
+                const colorRol = usuario.rol === 'admin' ? '#e74c3c' : '#3498db';
+                const colorEstado = usuario.estado === 'activo' ? '#27ae60' : '#95a5a6';
+                const iconoEstado = usuario.estado === 'activo' ? 'fa-check-circle' : 'fa-times-circle';
+                
+                fila.innerHTML = `
+                    <td style="padding: 1rem;">
+                        <strong>${usuario.username}</strong>
+                        ${usuario.username === 'admin' ? '<i class="fas fa-crown" style="color: gold; margin-left: 5px;"></i>' : ''}
+                    </td>
+                    <td style="padding: 1rem;">
+                        <span style="background: ${colorRol}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                            ${usuario.rol.toUpperCase()}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem;">${new Date(usuario.fechaCreacion).toLocaleDateString()}</td>
+                    <td style="padding: 1rem;">${new Date(usuario.ultimoAcceso).toLocaleDateString()}</td>
+                    <td style="padding: 1rem;">
+                        <span style="color: ${colorEstado};">
+                            <i class="fas ${iconoEstado}"></i> ${usuario.estado.toUpperCase()}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem;">
+                        <button class="btn btn-warning btn-sm" onclick="abrirModalEditarUsuario('${usuario.username}')" ${usuario.username === 'admin' ? 'disabled' : ''}>
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('${usuario.username}')" ${usuario.username === 'admin' ? 'disabled' : ''}>
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                tabla.appendChild(fila);
+            });
+        }
+
+        // Abrir modal para nuevo usuario
+        function abrirModalNuevoUsuario() {
+            document.getElementById('formNuevoUsuario').reset();
+            document.getElementById('modalNuevoUsuario').style.display = 'flex';
+        }
+
+        // Abrir modal para editar usuario
+        function abrirModalEditarUsuario(username) {
+            const usuario = usuarios.find(u => u.username === username);
+            if (!usuario) return;
+
+            document.getElementById('editarUsername').value = usuario.username;
+            document.getElementById('editarRol').value = usuario.rol;
+            document.getElementById('editarEstado').value = usuario.estado;
+            document.getElementById('editarPassword').value = '';
+            document.getElementById('editarConfirmarPassword').value = '';
+
+            document.getElementById('modalEditarUsuario').style.display = 'flex';
+        }
+
+        // Crear nuevo usuario
+        function crearNuevoUsuario(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('nuevoUsername').value.trim();
+            const password = document.getElementById('nuevoPassword').value;
+            const confirmarPassword = document.getElementById('confirmarPassword').value;
+            const rol = document.getElementById('nuevoRol').value;
+
+            // Validaciones
+            if (!/^[a-zA-Z0-9]{3,20}$/.test(username)) {
+                showMessage('❌ El nombre de usuario debe tener entre 3 y 20 caracteres (solo letras y números)', 'error');
+                return;
+            }
+
+            if (password.length < 4) {
+                showMessage('❌ La contraseña debe tener al menos 4 caracteres', 'error');
+                return;
+            }
+
+            if (password !== confirmarPassword) {
+                showMessage('❌ Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            // Verificar si el usuario ya existe
+            if (usuarios.find(u => u.username === username)) {
+                showMessage('❌ El nombre de usuario ya existe', 'error');
+                return;
+            }
+
+            // Crear nuevo usuario
+            const nuevoUsuario = {
+                username: username,
+                password: password,
+                rol: rol,
+                fechaCreacion: new Date().toISOString(),
+                ultimoAcceso: new Date().toISOString(),
+                estado: 'activo'
+            };
+
+            usuarios.push(nuevoUsuario);
+            guardarUsuariosEnStorage();
+            cargarTablaUsuarios();
+            
+            cerrarModal('modalNuevoUsuario');
+            showMessage('✅ Usuario creado exitosamente');
+        }
+
+        // Editar usuario existente
+        function editarUsuario(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('editarUsername').value;
+            const password = document.getElementById('editarPassword').value;
+            const confirmarPassword = document.getElementById('editarConfirmarPassword').value;
+            const rol = document.getElementById('editarRol').value;
+            const estado = document.getElementById('editarEstado').value;
+
+            const usuarioIndex = usuarios.findIndex(u => u.username === username);
+            if (usuarioIndex === -1) return;
+
+            // Validar contraseña si se proporciona
+            if (password) {
+                if (password.length < 4) {
+                    showMessage('❌ La contraseña debe tener al menos 4 caracteres', 'error');
+                    return;
+                }
+
+                if (password !== confirmarPassword) {
+                    showMessage('❌ Las contraseñas no coinciden', 'error');
+                    return;
+                }
+
+                usuarios[usuarioIndex].password = password;
+            }
+
+            // Actualizar datos del usuario
+            usuarios[usuarioIndex].rol = rol;
+            usuarios[usuarioIndex].estado = estado;
+
+            guardarUsuariosEnStorage();
+            cargarTablaUsuarios();
+            
+            cerrarModal('modalEditarUsuario');
+            showMessage('✅ Usuario actualizado exitosamente');
+        }
+
+        // Eliminar usuario
+        function eliminarUsuario(username) {
+            if (username === 'admin') {
+                showMessage('❌ No puedes eliminar el usuario administrador principal', 'error');
+                return;
+            }
+
+            if (confirm(`¿Estás seguro de que deseas eliminar al usuario "${username}"?`)) {
+                usuarios = usuarios.filter(u => u.username !== username);
+                guardarUsuariosEnStorage();
+                cargarTablaUsuarios();
+                showMessage('✅ Usuario eliminado exitosamente');
+            }
+        }
+
+        // Cambiar contraseña desde configuración
+        function cambiarPassword() {
+            const usuario = document.getElementById('usuarioSelect').value;
+            const nuevaPass = document.getElementById('nuevaPassword').value;
+            
+            if (nuevaPass.length < 4) {
+                showMessage('❌ La contraseña debe tener al menos 4 caracteres', 'error');
+                return;
+            }
+
+            const usuarioObj = usuarios.find(u => u.username === usuario);
+            if (usuarioObj) {
+                usuarioObj.password = nuevaPass;
+                guardarUsuariosEnStorage();
+                showMessage(`✅ Contraseña de ${usuario} cambiada exitosamente`);
+                document.getElementById('nuevaPassword').value = '';
+            }
+        }
+
+        // Cerrar modal
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // =============================================
+        // FUNCIONES EXISTENTES (se mantienen igual)
+        // =============================================
+
+        // Inicializar Handsontable - CONFIGURACIÓN COMPLETAMENTE CORREGIDA
+        function inicializarExcel() {
+            const container = document.getElementById('excelContainer');
+            const loadingElement = document.getElementById('excelLoading');
+            
+            loadingElement.classList.add('active');
+            container.style.display = 'none';
+
+            console.log("Inicializando Handsontable...");
+
+            // DATOS INICIALES CON COLUMNAS CLARAS
+            const initialData = [
+                ['ID', 'Producto', 'Stock', 'Enviados', 'Fallas', 'Categoría'],
+                [1, 'Tubo PVC 4"', 100, 25, 5, 'PVC'],
+                [2, 'Tubo Acero 2"', 50, 15, 2, 'Acero'],
+                [3, 'Tubo Cobre 1"', 75, 30, 3, 'Cobre'],
+                ['', '', '', '', '', ''] // Fila vacía para nuevas entradas
+            ];
+
+            // CONFIGURACIÓN SIMPLIFICADA Y FUNCIONAL PARA EDICIÓN
+            hot = new Handsontable(container, {
+                data: initialData,
+                licenseKey: 'non-commercial-and-evaluation',
+                rowHeaders: true,
+                colHeaders: true,
+                height: 500,
+                width: '100%',
+                
+                // CONFIGURACIÓN CLAVE PARA EDICIÓN
+                columns: [
+                    { type: 'numeric' },
+                    { type: 'text' },
+                    { type: 'numeric' },
+                    { type: 'numeric' },
+                    { type: 'numeric' },
+                    { type: 'text' }
+                ],
+                
+                // HABILITAR TODAS LAS FUNCIONALIDADES DE EDICIÓN
+                contextMenu: true,
+                manualRowResize: true,
+                manualColumnResize: true,
+                manualRowMove: true,
+                manualColumnMove: true,
+                filters: true,
+                dropdownMenu: true,
+                columnSorting: true,
+                stretchH: 'all',
+                minSpareRows: 1,
+                enterMoves: { row: 1, col: 0 },
+                tabMoves: { row: 0, col: 1 },
+                
+                // PERMITIR INSERTAR Y ELIMINAR
+                allowInsertRow: true,
+                allowInsertColumn: true,
+                allowRemoveRow: true,
+                allowRemoveColumn: true,
+                
+                // EVENTOS PARA EDIICIÓN - ACTUALIZAR ESTADÍSTICAS EN TIEMPO REAL
+                afterChange: function(changes, source) {
+                    if (source === 'edit' || source === 'autofill' || source === 'paste') {
+                        console.log('Cambios detectados:', changes);
+                        actualizarEstadisticas();
+                        guardarEnLocalStorage();
+                    }
+                },
+                
+                afterSelection: function(row, col, row2, col2) {
+                    actualizarBarraFormulas(row, col);
+                },
+                
+                afterRender: function() {
+                    console.log("Handsontable renderizado correctamente");
+                    loadingElement.classList.remove('active');
+                    container.style.display = 'block';
+                    // Actualizar estadísticas después del renderizado inicial
+                    setTimeout(actualizarEstadisticas, 100);
+                }
+            });
+
+            cargarDesdeLocalStorage();
+        }
+
+        // Actualizar barra de fórmulas
+        function actualizarBarraFormulas(row, col) {
+            const cellAddress = Handsontable.helpers.spreadsheetColumnLabel(col) + (row + 1);
+            document.getElementById('currentCell').textContent = cellAddress;
+            
+            const cellValue = hot.getDataAtCell(row, col);
+            document.getElementById('formulaInput').value = cellValue || '';
+        }
+
+        // Manejar entrada de fórmula
+        function manejarEntradaFormula(event) {
+            if (event.key === 'Enter') {
+                aplicarFormula();
+                event.preventDefault();
+            }
+        }
+
+        // Aplicar fórmula a la celda seleccionada - CORREGIDO
+        function aplicarFormula() {
+            const formulaInput = document.getElementById('formulaInput');
+            const formula = formulaInput.value.trim();
+            
+            if (!formula) {
+                showMessage('❌ Ingresa una fórmula primero', 'error');
+                return;
+            }
+            
+            const selected = hot.getSelected();
+            if (!selected || selected.length === 0) {
+                showMessage('❌ Selecciona una celda primero', 'error');
+                return;
+            }
+            
+            const [startRow, startCol, endRow, endCol] = selected[0];
+            
+            try {
+                // Si la fórmula empieza con =, intentar evaluarla
+                if (formula.startsWith('=')) {
+                    const resultado = evaluarFormula(formula.substring(1));
+                    hot.setDataAtCell(startRow, startCol, resultado);
+                    showMessage('✅ Fórmula aplicada correctamente: ' + resultado);
+                } else {
+                    // Si no, usar el valor directamente
+                    hot.setDataAtCell(startRow, startCol, formula);
+                    showMessage('✅ Valor aplicado correctamente');
+                }
+                
+                formulaInput.value = '';
+                
+                // Actualizar estadísticas después de aplicar fórmula
+                setTimeout(actualizarEstadisticas, 100);
+            } catch (error) {
+                console.error('Error aplicando fórmula:', error);
+                showMessage('❌ Error al aplicar la fórmula: ' + error.message, 'error');
+            }
+        }
+
+        // Evaluar fórmulas matemáticas simples - MEJORADO
+        function evaluarFormula(formula) {
+            console.log("Evaluando fórmula:", formula);
+            
+            // Reemplazar referencias de celdas con sus valores
+            const referenciaCeldaRegex = /[A-Z]+\d+/g;
+            formula = formula.replace(referenciaCeldaRegex, (match) => {
+                const colStr = match.replace(/\d+/g, '');
+                const row = parseInt(match.replace(/[A-Z]+/g, '')) - 1;
+                const colIndex = Handsontable.helpers.spreadsheetColumnIndex(colStr);
+                const valor = hot.getDataAtCell(row, colIndex);
+                console.log(`Referencia ${match}: fila=${row}, col=${colIndex}, valor=${valor}`);
+                return isNaN(valor) ? '0' : parseFloat(valor);
+            });
+            
+            // Reemplazar funciones comunes
+            formula = formula.toLowerCase()
+                .replace(/suma\(/g, 'sum(')
+                .replace(/promedio\(/g, 'average(')
+                .replace(/maximo\(/g, 'max(')
+                .replace(/minimo\(/g, 'min(');
+            
+            console.log("Fórmula procesada:", formula);
+            
+            // Evaluar la fórmula de forma segura
+            try {
+                // Crear un contexto seguro para la evaluación
+                const mathContext = {
+                    sum: (...args) => args.reduce((a, b) => a + b, 0),
+                    average: (...args) => args.reduce((a, b) => a + b, 0) / args.length,
+                    max: (...args) => Math.max(...args),
+                    min: (...args) => Math.min(...args),
+                    sqrt: Math.sqrt,
+                    round: Math.round,
+                    floor: Math.floor,
+                    ceil: Math.ceil
+                };
+                
+                // Crear función segura
+                const func = new Function(...Object.keys(mathContext), 
+                    `return ${formula};`);
+                
+                const resultado = func(...Object.values(mathContext));
+                console.log("Resultado:", resultado);
+                return resultado;
+            } catch (error) {
+                throw new Error('Fórmula inválida: ' + formula + ' - ' + error.message);
+            }
+        }
+
+        // Ejecutar operaciones matemáticas - COMPLETAMENTE CORREGIDO
+        function ejecutarOperacion(operacion) {
+            const selected = hot.getSelected();
+            if (!selected || selected.length === 0) {
+                showMessage('❌ Selecciona un rango de celdas primero', 'error');
+                return;
+            }
+            
+            const [startRow, startCol, endRow, endCol] = selected[0];
+            let resultado = 0;
+            let valores = [];
+            
+            console.log(`Ejecutando operación: ${operacion} en rango [${startRow},${startCol}] a [${endRow},${endCol}]`);
+            
+            // Recopilar valores numéricos del rango seleccionado
+            for (let row = startRow; row <= endRow; row++) {
+                for (let col = startCol; col <= endCol; col++) {
+                    const valor = hot.getDataAtCell(row, col);
+                    if (valor !== null && valor !== '' && !isNaN(valor)) {
+                        valores.push(parseFloat(valor));
+                    }
+                }
+            }
+            
+            console.log("Valores encontrados:", valores);
+            
+            if (valores.length === 0) {
+                showMessage('❌ No hay valores numéricos en la selección', 'error');
+                return;
+            }
+            
+            // Realizar la operación
+            try {
+                switch (operacion) {
+                    case 'suma':
+                        resultado = valores.reduce((a, b) => a + b, 0);
+                        break;
+                    case 'promedio':
+                        resultado = valores.reduce((a, b) => a + b, 0) / valores.length;
+                        break;
+                    case 'maximo':
+                        resultado = Math.max(...valores);
+                        break;
+                    case 'minimo':
+                        resultado = Math.min(...valores);
+                        break;
+                    case 'contar':
+                        resultado = valores.length;
+                        break;
+                    case 'multiplicar':
+                        resultado = valores.reduce((a, b) => a * b, 1);
+                        break;
+                    case 'dividir':
+                        if (valores.length >= 2) {
+                            resultado = valores[0];
+                            for (let i = 1; i < valores.length; i++) {
+                                if (valores[i] === 0) {
+                                    showMessage('❌ No se puede dividir por cero', 'error');
+                                    return;
+                                }
+                                resultado /= valores[i];
+                            }
+                        } else {
+                            showMessage('❌ Selecciona al menos dos valores para dividir', 'error');
+                            return;
+                        }
+                        break;
+                    default:
+                        showMessage('❌ Operación no reconocida', 'error');
+                        return;
+                }
+                
+                // Formatear el resultado
+                if (Number.isInteger(resultado)) {
+                    resultado = Math.round(resultado);
+                } else {
+                    resultado = Math.round(resultado * 100) / 100;
+                }
+                
+                // Insertar el resultado en la primera celda de la selección
+                hot.setDataAtCell(startRow, startCol, resultado);
+                showMessage(`✅ ${operacion.toUpperCase()} completado: ${resultado}`);
+                
+                // Actualizar estadísticas después de la operación
+                setTimeout(actualizarEstadisticas, 100);
+                
+            } catch (error) {
+                console.error('Error en operación:', error);
+                showMessage('❌ Error al realizar la operación: ' + error.message, 'error');
+            }
+        }
+
+        // FUNCIÓN MEJORADA: Actualizar estadísticas en tiempo real
+        function actualizarEstadisticas() {
+            try {
+                const data = hot.getData();
+                console.log("Actualizando estadísticas con datos:", data);
+                
+                if (!data || data.length < 2) {
+                    resetearEstadisticas();
+                    return;
+                }
+                
+                const headers = data[0];
+                const indices = encontrarIndicesColumnas(headers);
+                
+                let totalAlmacen = 0;
+                let totalEnviados = 0;
+                let totalFallas = 0;
+                
+                // Procesar todas las filas de datos (excluyendo encabezados)
+                for (let i = 1; i < data.length; i++) {
+                    const row = data[i];
+                    if (!row || row.length === 0) continue;
+                    
+                    // Sumar valores de cada columna si existen
+                    if (indices.stock !== -1 && !isNaN(row[indices.stock])) {
+                        totalAlmacen += parseFloat(row[indices.stock]) || 0;
+                    }
+                    
+                    if (indices.enviados !== -1 && !isNaN(row[indices.enviados])) {
+                        totalEnviados += parseFloat(row[indices.enviados]) || 0;
+                    }
+                    
+                    if (indices.fallas !== -1 && !isNaN(row[indices.fallas])) {
+                        totalFallas += parseFloat(row[indices.fallas]) || 0;
+                    }
+                }
+                
+                // Actualizar la interfaz
+                document.getElementById('totalAlmacen').textContent = Math.round(totalAlmacen).toLocaleString();
+                document.getElementById('totalEnviados').textContent = Math.round(totalEnviados).toLocaleString();
+                document.getElementById('totalFallas').textContent = Math.round(totalFallas).toLocaleString();
+                document.getElementById('totalDisponible').textContent = Math.round(totalAlmacen - totalFallas).toLocaleString();
+                
+                console.log("Estadísticas actualizadas:", {
+                    almacen: totalAlmacen,
+                    enviados: totalEnviados,
+                    fallas: totalFallas,
+                    disponible: totalAlmacen - totalFallas
+                });
+
+            } catch (error) {
+                console.error('Error calculando estadísticas:', error);
+                resetearEstadisticas();
+            }
+        }
+
+        // Encontrar índices de columnas automáticamente
+        function encontrarIndicesColumnas(headers) {
+            const indices = {
+                stock: -1,
+                enviados: -1,
+                fallas: -1
+            };
+            
+            if (!headers || !Array.isArray(headers)) return indices;
+            
+            headers.forEach((header, index) => {
+                if (!header) return;
+                
+                const headerStr = header.toString().toLowerCase().trim();
+                
+                // Buscar coincidencias para stock
+                if (columnMapping.stock.some(term => headerStr.includes(term))) {
+                    indices.stock = index;
+                }
+                // Buscar coincidencias para enviados
+                else if (columnMapping.enviados.some(term => headerStr.includes(term))) {
+                    indices.enviados = index;
+                }
+                // Buscar coincidencias para fallas
+                else if (columnMapping.fallas.some(term => headerStr.includes(term))) {
+                    indices.fallas = index;
+                }
+            });
+            
+            console.log("Índices encontrados:", indices);
+            return indices;
+        }
+
+        // Resetear estadísticas a cero
+        function resetearEstadisticas() {
+            document.getElementById('totalAlmacen').textContent = '0';
+            document.getElementById('totalEnviados').textContent = '0';
+            document.getElementById('totalFallas').textContent = '0';
+            document.getElementById('totalDisponible').textContent = '0';
+        }
+
+        // Importar archivo Excel - CORREGIDO
+        function importarExcel() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showMessage('❌ Por favor selecciona un archivo Excel', 'error');
+                return;
+            }
+
+            console.log("Iniciando importación del archivo:", file.name);
+
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importando...';
+            button.disabled = true;
+
+            const loadingElement = document.getElementById('excelLoading');
+            const container = document.getElementById('excelContainer');
+            loadingElement.classList.add('active');
+            container.style.display = 'none';
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    console.log("Archivo leído correctamente");
+                    
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    console.log("Workbook cargado, hojas:", workbook.SheetNames);
+                    
+                    if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+                        throw new Error('El archivo no contiene hojas de cálculo');
+                    }
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    console.log("Procesando hoja:", firstSheetName);
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+                        header: 1, 
+                        defval: '',
+                        blankrows: true
+                    });
+
+                    console.log("Datos convertidos a JSON, filas:", jsonData.length);
+
+                    if (!jsonData || jsonData.length === 0) {
+                        throw new Error('No se pudieron extraer datos del archivo');
+                    }
+
+                    while (jsonData.length > 0 && 
+                           jsonData[jsonData.length - 1].every(cell => 
+                               cell === '' || cell === null || cell === undefined)) {
+                        jsonData.pop();
+                    }
+
+                    if (jsonData.length === 0) {
+                        throw new Error('El archivo está vacío después de limpiar filas vacías');
+                    }
+
+                    console.log("Cargando datos en Handsontable...");
+                    
+                    // Cargar datos en la tabla existente
+                    hot.loadData(jsonData);
+                    
+                    currentFile = file;
+                    document.getElementById('excelStatus').style.display = 'flex';
+                    document.getElementById('fileName').textContent = file.name;
+                    
+                    setTimeout(() => {
+                        showTabProgramaticamente('inventario');
+                    }, 500);
+                    
+                    // Actualizar estadísticas después de cargar los datos
+                    setTimeout(actualizarEstadisticas, 1000);
+                    
+                    guardarEnLocalStorage();
+                    
+                    showMessage(`✅ Archivo Excel "${file.name}" importado exitosamente. ${jsonData.length} filas cargadas.`);
+                    
+                } catch (error) {
+                    console.error('Error procesando Excel:', error);
+                    showMessage('❌ Error al procesar el archivo Excel: ' + error.message, 'error');
+                } finally {
+                    button.innerHTML = '<i class="fas fa-upload"></i> Importar Archivo Excel';
+                    button.disabled = false;
+                    fileInput.value = '';
+                    loadingElement.classList.remove('active');
+                    container.style.display = 'block';
+                }
+            };
+            
+            reader.onerror = function(error) {
+                console.error('Error leyendo archivo:', error);
+                showMessage('❌ Error al leer el archivo. Puede que esté corrupto.', 'error');
+                button.innerHTML = '<i class="fas fa-upload"></i> Importar Archivo Excel';
+                button.disabled = false;
+                loadingElement.classList.remove('active');
+                container.style.display = 'block';
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Función para cambiar pestañas programáticamente
+        function showTabProgramaticamente(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Función original para cuando se hace clic manualmente
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Exportar a Excel
+        function exportarExcel() {
+            try {
+                const data = hot.getData();
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+                
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `inventario_tubos_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showMessage('✅ Archivo Excel exportado exitosamente');
+            } catch (error) {
+                console.error('Error exportando Excel:', error);
+                showMessage('❌ Error al exportar el archivo Excel', 'error');
+            }
+        }
+
+        // Guardar en el mismo archivo (sobrescribir)
+        function guardarExcel() {
+            if (!currentFile) {
+                exportarExcel();
+                return;
+            }
+            
+            try {
+                const data = hot.getData();
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+                
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = currentFile.name;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showMessage('✅ Archivo guardado exitosamente');
+            } catch (error) {
+                console.error('Error guardando Excel:', error);
+                showMessage('❌ Error al guardar el archivo Excel', 'error');
+            }
+        }
+
+        // Quitar tabla - FUNCIÓN CORREGIDA
+        function quitarTabla() {
+            if (confirm('¿Estás seguro de que deseas quitar la tabla? Se perderán los datos no guardados.')) {
+                // Limpiar datos
+                hot.loadData([['']]);
+                
+                // Limpiar variables
+                currentFile = null;
+                
+                // Ocultar estado del archivo
+                document.getElementById('excelStatus').style.display = 'none';
+                
+                // Limpiar localStorage
+                localStorage.removeItem('excelData');
+                localStorage.removeItem('excelTimestamp');
+                
+                // Resetear estadísticas
+                resetearEstadisticas();
+                
+                showMessage('✅ Tabla quitada correctamente');
+            }
+        }
+
+        // Guardar en localStorage
+        function guardarEnLocalStorage() {
+            try {
+                const data = hot.getData();
+                localStorage.setItem('excelData', JSON.stringify(data));
+                localStorage.setItem('excelTimestamp', new Date().toISOString());
+            } catch (error) {
+                console.error('Error guardando en localStorage:', error);
+            }
+        }
+
+        // Cargar desde localStorage
+        function cargarDesdeLocalStorage() {
+            try {
+                const storedData = localStorage.getItem('excelData');
+                if (storedData) {
+                    const data = JSON.parse(storedData);
+                    if (hot) {
+                        hot.loadData(data);
+                        actualizarEstadisticas();
+                        document.getElementById('excelStatus').style.display = 'flex';
+                        document.getElementById('fileName').textContent = 'Datos recuperados';
+                        
+                        document.getElementById('excelLoading').classList.remove('active');
+                        document.getElementById('excelContainer').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando desde localStorage:', error);
+                document.getElementById('excelLoading').classList.remove('active');
+                document.getElementById('excelContainer').style.display = 'block';
+            }
+        }
+
+        // Función para mostrar mensajes
+        function showMessage(message, type = 'success') {
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if (type === 'success') {
+                successMsg.textContent = message;
+                successMsg.style.display = 'block';
+                errorMsg.style.display = 'none';
+                
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 5000);
+            } else {
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Cerrar sesión
+        function logout() {
+            const confirmacion = confirm('¿Estás seguro de que deseas cerrar sesión? Se perderán los datos del Excel cargado.');
+            
+            if (confirmacion) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('excelData');
+                localStorage.removeItem('excelTimestamp');
+                
+                showMessage('✅ Sesión cerrada correctamente. Redirigiendo...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        }
+
+        // Verificar autenticación y cargar datos
+        async function cargarDatos() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const usuario = JSON.parse(user);
+            if (usuario.rol !== 'admin') {
+                window.location.href = 'cliente-dashboard.html';
+                return;
+            }
+
+            document.getElementById('userBadge').innerHTML = 
+                `<i class="fas fa-user-shield"></i> ${usuario.username} (Administrador)`;
+
+            try {
+                // Inicializar sistema de usuarios
+                inicializarUsuarios();
+                cargarTablaUsuarios();
+                
+                // Inicializar Excel
+                inicializarExcel();
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                showMessage('Error cargando los datos del sistema', 'error');
+            }
+        }
+
+        // Asignar eventos a los tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    showTab(tabName);
+                });
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Inicializar la aplicación
+            cargarDatos();
+        });
+
+    </script>
+</body>
+</html>

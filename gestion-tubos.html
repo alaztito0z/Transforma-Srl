@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tubos - Sistema de Gestión de Tubos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #27ae60;
+            --accent: #ffffff;
+            --light-bg: #f8f9fa;
+            --dark-text: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --success: #27ae60;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --info: #3498db;
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header y Navegación */
+        header {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: var(--accent);
+            margin-bottom: 4px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #219653;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary), #2c3e50);
+            color: var(--accent);
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* Vista previa Excel */
+        .excel-preview-container {
+            background: var(--accent);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .excel-preview-header {
+            background: #2c3e50;
+            color: var(--accent);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .excel-preview-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .excel-preview-table table {
+            width: 100%;
+            min-width: 800px;
+        }
+
+        .excel-preview-table th {
+            background: #34495e;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .excel-preview-table td {
+            border: 1px solid #e9ecef;
+        }
+
+        .confirm-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .file-input-container {
+            margin: 1rem 0;
+            padding: 1.5rem;
+            border: 2px dashed #ddd;
+            border-radius: var(--radius);
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .status-info {
+            background: #e8f4fd;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--info);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--accent);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--secondary);
+        }
+        
+        .stat-card.success {
+            border-top-color: var(--success);
+        }
+        
+        .stat-card.warning {
+            border-top-color: var(--warning);
+        }
+        
+        .stat-card.info {
+            border-top-color: var(--info);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+        
+        .stat-card.success .stat-icon {
+            color: var(--success);
+        }
+        
+        .stat-card.warning .stat-icon {
+            color: var(--warning);
+        }
+        
+        .stat-card.info .stat-icon {
+            color: var(--info);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .copyright {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--primary);
+                padding: 1rem 0;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        /* Mensajes */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+            border-left: 4px solid;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: var(--error);
+            border-left-color: var(--error);
+        }
+
+        .success-message {
+            background: #efc;
+            color: var(--success);
+            border-left-color: var(--success);
+        }
+
+        /* Botón de actualización para clientes */
+        .btn-sync {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-sync:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="logop.jpg" alt="Logo Empresa" class="logo">
+                <div class="brand-name">Transforma Srl</div>
+            </div>
+            
+            <nav>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                    <a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i>Panel Admin</a>
+                    <a href="gestion-tubos.html" class="active"><i class="fas fa-cog"></i> Gestión Tubos</a>
+                    <a href="historial.html"><i class="fas fa-history"></i> Historial</a>
+                </div>
+            </nav>
+            
+            <div class="user-info">
+                <div class="user-badge" id="userBadge">
+                    <i class="fas fa-user-shield"></i> Cargando...
+                </div>
+                <button class="btn btn-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Mensajes globales -->
+        <div class="message success-message" id="successMsg"></div>
+        <div class="message error-message" id="errorMsg"></div>
+
+        <!-- Page Header -->
+        <div class="page-header fade-in">
+            <h1><i class="fas fa-cogs"></i> Gestión Avanzada de Tubos</h1>
+            <p>Administración completa del inventario - Control total sobre tipos de tubos y stock</p>
+        </div>
+
+        <!-- Información de estado -->
+        <div class="status-info fade-in">
+            <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
+            <p>Los datos se cargan automáticamente desde el archivo Excel del panel de administración.</p>
+            <p><strong>Archivo actual:</strong> <span id="currentFileInfo">No se ha cargado ningún archivo</span></p>
+            <p><strong>Última actualización:</strong> <span id="lastUpdateInfo">No disponible</span></p>
+        </div>
+
+        <!-- Stats Grid con datos reales del Excel -->
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="stat-value" id="totalAlmacen">0</div>
+                <div class="stat-label">Almacén Total</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <div class="stat-value" id="totalEnviados">0</div>
+                <div class="stat-label">Total Enviados</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value" id="totalFallas">0</div>
+                <div class="stat-label">Total Fallas</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value" id="totalDisponible">0</div>
+                <div class="stat-label">Disponible Real</div>
+            </div>
+        </div>
+
+        <!-- Vista Previa de Excel -->
+        <div class="excel-preview-container fade-in">
+            <div class="excel-preview-header">
+                <h2><i class="fas fa-file-excel"></i> Vista Previa - Datos del Excel del Panel Admin</h2>
+                <div class="table-actions">
+                    <button class="btn btn-primary" onclick="cargarDatosDesdeAdmin()">
+                        <i class="fas fa-sync-alt"></i> Cargar Datos Actuales
+                    </button>
+                </div>
+            </div>
+
+            <div class="excel-preview-table">
+                <table id="excelPreviewTable">
+                    <thead>
+                        <tr>
+                            <!-- Las columnas se generarán dinámicamente -->
+                        </tr>
+                    </thead>
+                    <tbody id="excelPreviewBody">
+                        <!-- Los datos se cargarán con JavaScript -->
+                    </tbody>
+                </table>
+                <div id="noExcelData" class="no-data">
+                    <i class="fas fa-file-excel fa-3x" style="color: #ddd; margin-bottom: 1rem;"></i>
+                    <p>No hay datos de Excel cargados desde el panel de administración</p>
+                    <p style="font-size: 0.9rem;">Usa el botón "Cargar Datos Actuales" para sincronizar</p>
+                </div>
+            </div>
+
+            <div class="confirm-section">
+                <button class="btn btn-success" id="confirmarBtn" onclick="confirmarDatosParaClientes()" disabled>
+                    <i class="fas fa-check-circle"></i> Confirmar y Publicar para Clientes
+                </button>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
+                    Una vez confirmados, estos datos estarán disponibles para los clientes en tiempo real
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Sistema de Gestión de Tubos - Transforma Srl</p>
+            <div class="copyright">
+                <p>&copy;  Versión 2.0 | Gestión de Tubos</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para procesar Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Datos
+        let datosExcel = null;
+        let datosProcesados = [];
+        const API_BASE_URL = 'http://localhost:3002';
+
+        // Menú hamburguesa
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Mostrar mensajes
+        function showMessage(message, type = 'success') {
+            const messageDiv = type === 'success' ? document.getElementById('successMsg') : document.getElementById('errorMsg');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Cargar datos desde el panel de admin
+        function cargarDatosDesdeAdmin() {
+            try {
+                // Obtener datos del localStorage del panel de admin
+                const excelData = localStorage.getItem('excelData');
+                const excelTimestamp = localStorage.getItem('excelTimestamp');
+                
+                if (!excelData) {
+                    showMessage('❌ No se encontraron datos del panel de administración', 'error');
+                    return;
+                }
+
+                // Parsear los datos
+                datosExcel = JSON.parse(excelData);
+                
+                // Actualizar información del archivo
+                document.getElementById('currentFileInfo').textContent = 'Datos del Panel Admin';
+                document.getElementById('lastUpdateInfo').textContent = excelTimestamp ? 
+                    new Date(excelTimestamp).toLocaleString('es-ES') : 'Recién cargado';
+
+                // Mostrar vista previa
+                mostrarVistaPreviaExcel(datosExcel);
+                
+                // Procesar datos para estadísticas
+                datosProcesados = procesarDatosExcel(datosExcel);
+                actualizarEstadisticasConDatosReales(datosExcel);
+                
+                // Habilitar botón de confirmación
+                document.getElementById('confirmarBtn').disabled = false;
+                
+                showMessage('✅ Datos cargados correctamente desde el panel de administración');
+
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                showMessage('❌ Error al cargar datos del panel de administración', 'error');
+            }
+        }
+
+        // Mostrar vista previa del Excel en tabla HTML
+        function mostrarVistaPreviaExcel(data) {
+            const tableHead = document.querySelector('#excelPreviewTable thead tr');
+            const tableBody = document.getElementById('excelPreviewBody');
+            const noDataDiv = document.getElementById('noExcelData');
+
+            // Limpiar tabla
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                noDataDiv.style.display = 'block';
+                return;
+            }
+
+            noDataDiv.style.display = 'none';
+
+            // Crear encabezados (primera fila)
+            const headers = data[0];
+            headers.forEach((header, index) => {
+                const th = document.createElement('th');
+                th.textContent = header || `Columna ${index + 1}`;
+                th.style.minWidth = '100px';
+                tableHead.appendChild(th);
+            });
+
+            // Crear filas de datos (resto de filas)
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                const tr = document.createElement('tr');
+                
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.textContent = cell !== null && cell !== undefined ? cell : '';
+                    
+                    // Resaltar números
+                    if (!isNaN(cell) && cell !== '') {
+                        td.style.textAlign = 'right';
+                        td.style.fontWeight = '500';
+                        td.style.color = '#2c3e50';
+                    }
+                    
+                    tr.appendChild(td);
+                });
+
+                // Si la fila tiene menos celdas que los encabezados, agregar celdas vacías
+                while (tr.cells.length < headers.length) {
+                    const td = document.createElement('td');
+                    tr.appendChild(td);
+                }
+
+                tableBody.appendChild(tr);
+            }
+        }
+
+        // Actualizar estadísticas con datos reales del Excel
+        function actualizarEstadisticasConDatosReales(data) {
+            if (!data || data.length < 2) {
+                resetearEstadisticas();
+                return;
+            }
+
+            const headers = data[0];
+            console.log('Headers encontrados:', headers);
+
+            // Buscar índices exactos de las columnas
+            const indices = {
+                almacen: -1,
+                enviados: -1,
+                fallas: -1,
+                disponible: -1
+            };
+
+            // Buscar los índices exactos de las columnas
+            headers.forEach((header, index) => {
+                const headerStr = header.toString().trim();
+                console.log(`Buscando columna: "${headerStr}"`);
+                
+                if (headerStr === 'Almacén') indices.almacen = index;
+                else if (headerStr === 'Enviados') indices.enviados = index;
+                else if (headerStr === 'Fallas') indices.fallas = index;
+                else if (headerStr === 'Disponible') indices.disponible = index;
+            });
+
+            console.log('Índices encontrados:', indices);
+
+            let totalAlmacen = 0;
+            let totalEnviados = 0;
+            let totalFallas = 0;
+            let totalDisponible = 0;
+
+            // Calcular totales basados en los datos reales del Excel
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                if (!row || row.length === 0) continue;
+
+                // Almacén
+                if (indices.almacen !== -1 && !isNaN(row[indices.almacen])) {
+                    totalAlmacen += parseFloat(row[indices.almacen]) || 0;
+                }
+                
+                // Enviados
+                if (indices.enviados !== -1 && !isNaN(row[indices.enviados])) {
+                    totalEnviados += parseFloat(row[indices.enviados]) || 0;
+                }
+                
+                // Fallas
+                if (indices.fallas !== -1 && !isNaN(row[indices.fallas])) {
+                    totalFallas += parseFloat(row[indices.fallas]) || 0;
+                }
+                
+                // Disponible
+                if (indices.disponible !== -1 && !isNaN(row[indices.disponible])) {
+                    totalDisponible += parseFloat(row[indices.disponible]) || 0;
+                }
+            }
+
+            console.log('Estadísticas calculadas:', {
+                totalAlmacen,
+                totalEnviados,
+                totalFallas,
+                totalDisponible
+            });
+
+            // Actualizar la interfaz
+            document.getElementById('totalAlmacen').textContent = Math.round(totalAlmacen);
+            document.getElementById('totalEnviados').textContent = Math.round(totalEnviados);
+            document.getElementById('totalFallas').textContent = Math.round(totalFallas);
+            document.getElementById('totalDisponible').textContent = Math.round(totalDisponible);
+        }
+
+        // Resetear estadísticas
+        function resetearEstadisticas() {
+            document.getElementById('totalAlmacen').textContent = '0';
+            document.getElementById('totalEnviados').textContent = '0';
+            document.getElementById('totalFallas').textContent = '0';
+            document.getElementById('totalDisponible').textContent = '0';
+        }
+
+        // Confirmar y guardar datos para clientes
+        async function confirmarDatosParaClientes() {
+            if (!datosProcesados || datosProcesados.length === 0) {
+                showMessage('❌ No hay datos válidos para confirmar', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Mostrar loading
+                const confirmarBtn = document.getElementById('confirmarBtn');
+                const originalText = confirmarBtn.innerHTML;
+                confirmarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+                confirmarBtn.disabled = true;
+
+                // Guardar en localStorage para clientes
+                localStorage.setItem('datosClientes', JSON.stringify(datosProcesados));
+                localStorage.setItem('ultimaActualizacionClientes', new Date().toISOString());
+
+                // También guardar en el backend
+                const response = await fetch(`${API_BASE_URL}/api/actualizar-clientes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        datos: datosProcesados,
+                        fechaActualizacion: new Date().toISOString(),
+                        fuente: 'excel_panel_admin'
+                    })
+                });
+
+                if (response.ok) {
+                    showMessage('✅ Datos publicados exitosamente para clientes');
+                    
+                    // Actualizar información
+                    document.getElementById('lastUpdateInfo').textContent = new Date().toLocaleString('es-ES');
+                    
+                } else {
+                    throw new Error('Error al publicar datos para clientes');
+                }
+                
+            } catch (error) {
+                console.error('Error publicando datos:', error);
+                showMessage('✅ Datos guardados localmente para clientes (fallback)');
+                
+                // Fallback: guardar solo localmente
+                localStorage.setItem('datosClientes', JSON.stringify(datosProcesados));
+                localStorage.setItem('ultimaActualizacionClientes', new Date().toISOString());
+                
+                // Actualizar información
+                document.getElementById('lastUpdateInfo').textContent = new Date().toLocaleString('es-ES');
+            } finally {
+                // Restaurar botón
+                const confirmarBtn = document.getElementById('confirmarBtn');
+                confirmarBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirmar y Publicar para Clientes';
+            }
+        }
+
+        // Procesar datos de Excel al formato de la aplicación
+        function procesarDatosExcel(datosExcel) {
+            const headers = datosExcel[0];
+            const datosProcesados = [];
+
+            // Buscar índices de columnas importantes
+            const indices = {
+                id: encontrarIndiceColumna(headers, ['id', 'codigo', 'número']),
+                nombre: encontrarIndiceColumna(headers, ['nombre', 'producto', 'descripción', 'tipo', 'tubo']),
+                almacen: encontrarIndiceColumna(headers, ['almacen', 'stock', 'inventario', 'cantidad', 'existencia']),
+                enviados: encontrarIndiceColumna(headers, ['enviados', 'ventas', 'despachados', 'salidas']),
+                fallas: encontrarIndiceColumna(headers, ['fallas', 'defectos', 'observacion', 'problemas'])
+            };
+
+            console.log('Índices detectados:', indices);
+
+            // Procesar cada fila de datos
+            for (let i = 1; i < datosExcel.length; i++) {
+                const fila = datosExcel[i];
+                if (!fila || fila.length === 0) continue;
+
+                // Saltar filas completamente vacías
+                if (fila.every(cell => cell === '' || cell === null || cell === undefined)) {
+                    continue;
+                }
+
+                const tubo = {
+                    id: indices.id !== -1 ? (fila[indices.id] || i) : i,
+                    nombre: indices.nombre !== -1 ? (fila[indices.nombre] || `Tubo ${i}`) : `Tubo ${i}`,
+                    almacen: indices.almacen !== -1 ? (parseInt(fila[indices.almacen]) || 0) : 0,
+                    enviados: indices.enviados !== -1 ? (parseInt(fila[indices.enviados]) || 0) : 0,
+                    fallas: indices.fallas !== -1 ? (parseInt(fila[indices.fallas]) || 0) : 0,
+                    activo: true,
+                    ultimaActualizacion: new Date().toLocaleDateString('es-ES')
+                };
+
+                datosProcesados.push(tubo);
+            }
+
+            console.log('Datos procesados:', datosProcesados);
+            return datosProcesados;
+        }
+
+        // Encontrar índice de columna por nombres posibles
+        function encontrarIndiceColumna(headers, nombresPosibles) {
+            for (let i = 0; i < headers.length; i++) {
+                const header = headers[i]?.toString().toLowerCase().trim();
+                if (header && nombresPosibles.some(nombre => header.includes(nombre.toLowerCase()))) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // Verificar autenticación
+        async function verificarAutenticacion() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const usuario = JSON.parse(user);
+            if (usuario.rol !== 'admin') {
+                window.location.href = 'cliente-dashboard.html';
+                return;
+            }
+
+            document.getElementById('userBadge').innerHTML = 
+                `<i class="fas fa-user-shield"></i> ${usuario.username} (Administrador)`;
+
+            // Intentar cargar datos automáticamente al iniciar
+            cargarDatosDesdeAdmin();
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', verificarAutenticacion);
+    </script>
+</body>
+</html>

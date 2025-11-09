@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial - Sistema de Gestión de Tubos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #27ae60;
+            --accent: #ffffff;
+            --light-bg: #f8f9fa;
+            --dark-text: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --success: #27ae60;
+            --warning: #f39c12;
+            --error: #e74c3c;
+            --info: #3498db;
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header y Navegación */
+        header {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .nav-links a.active {
+            color: var(--secondary);
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: var(--accent);
+            margin-bottom: 4px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #219653;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary), #2c3e50);
+            color: var(--accent);
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* Filters */
+        .filters {
+            background: var(--accent);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: var(--accent);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .table-header {
+            background: var(--primary);
+            color: var(--accent);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-text);
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .entrada {
+            color: var(--success);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .salida {
+            color: var(--error);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .falla {
+            color: var(--warning);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .sistema {
+            color: var(--info);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .copyright {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--primary);
+                padding: 1rem 0;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .table-actions {
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--accent);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 4px solid var(--secondary);
+        }
+        
+        .stat-card.success { border-top-color: var(--success); }
+        .stat-card.warning { border-top-color: var(--warning); }
+        .stat-card.error { border-top-color: var(--error); }
+        .stat-card.info { border-top-color: var(--info); }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card.success .stat-icon { color: var(--success); }
+        .stat-card.warning .stat-icon { color: var(--warning); }
+        .stat-card.error .stat-icon { color: var(--error); }
+        .stat-card.info .stat-icon { color: var(--info); }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Mensajes */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+            border-left: 4px solid;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: var(--error);
+            border-left-color: var(--error);
+        }
+
+        .success-message {
+            background: #efc;
+            color: var(--success);
+            border-left-color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="logop.jpg" alt="Logo Empresa" class="logo">
+                <div class="brand-name">Transforma Srl</div>
+            </div>
+            
+            <nav>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                    <a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i>Panel Admin</a>
+                    <a href="gestion-tubos.html"><i class="fas fa-cog"></i> Gestión Tubos</a>
+                    <a href="historial.html" class="active"><i class="fas fa-history"></i> Historial</a>
+                </div>
+            </nav>
+            
+            <div class="user-info">
+                <div class="user-badge" id="userBadge">
+                    <i class="fas fa-user-shield"></i> Cargando...
+                </div>
+                <button class="btn btn-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Mensajes globales -->
+        <div class="message success-message" id="successMsg"></div>
+        <div class="message error-message" id="errorMsg"></div>
+
+        <!-- Page Header -->
+        <div class="page-header fade-in">
+            <h1><i class="fas fa-history"></i> Historial de Movimientos</h1>
+            <p>Registro completo de todas las operaciones del sistema - Auditoría y trazabilidad</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-cards fade-in">
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <div class="stat-value" id="totalEntradas">0</div>
+                <div class="stat-label">Entradas</div>
+            </div>
+            <div class="stat-card error">
+                <div class="stat-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <div class="stat-value" id="totalSalidas">0</div>
+                <div class="stat-label">Salidas</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value" id="totalFallas">0</div>
+                <div class="stat-label">Fallas Reportadas</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalUsuarios">0</div>
+                <div class="stat-label">Usuarios Activos</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters fade-in">
+            <div class="filter-group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Inicio:</label>
+                <input type="date" id="fechaInicio" class="form-control">
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-calendar-alt"></i> Fecha Fin:</label>
+                <input type="date" id="fechaFin" class="form-control">
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> Tipo Movimiento:</label>
+                <select id="tipoMovimiento" class="form-control">
+                    <option value="">Todos los movimientos</option>
+                    <option value="entrada">Entrada de stock</option>
+                    <option value="salida">Salida de stock</option>
+                    <option value="falla">Reporte de fallas</option>
+                    <option value="sistema">Acción del sistema</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-user"></i> Usuario:</label>
+                <select id="usuarioFiltro" class="form-control">
+                    <option value="">Todos los usuarios</option>
+                    <option value="admin">Administrador</option>
+                    <option value="cliente">Cliente</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-search"></i> Buscar:</label>
+                <input type="text" id="buscarTexto" class="form-control" placeholder="Buscar en descripción...">
+            </div>
+            <div class="filter-group" style="justify-content: flex-end;">
+                <button class="btn btn-primary" onclick="aplicarFiltros()" style="margin-top: 1.75rem;">
+                    <i class="fas fa-filter"></i> Aplicar Filtros
+                </button>
+                <button class="btn btn-warning" onclick="limpiarFiltros()" style="margin-top: 1.75rem;">
+                    <i class="fas fa-broom"></i> Limpiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container fade-in">
+            <div class="table-header">
+                <h2><i class="fas fa-clipboard-list"></i> Registro de Actividades</h2>
+                <div class="table-actions">
+                    <button class="btn btn-primary" onclick="exportarHistorial()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button class="btn btn-info" onclick="imprimirHistorial()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <button class="btn btn-danger" onclick="limpiarHistorial()">
+                        <i class="fas fa-trash"></i> Limpiar Historial
+                    </button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha/Hora</th>
+                        <th>Usuario</th>
+                        <th>Tipo de Movimiento</th>
+                        <th>Elemento</th>
+                        <th>Cantidad</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorial">
+                    <!-- Los datos se cargarán con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+            <div style="color: #666;">
+                Mostrando <strong id="registrosMostrados">0</strong> de <strong id="totalRegistros">0</strong> registros
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-primary" id="btnAnterior" onclick="cambiarPagina(-1)">
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span style="padding: 0.5rem 1rem; background: #f8f9fa; border-radius: 6px;">
+                    Página <strong id="paginaActual">1</strong>
+                </span>
+                <button class="btn btn-primary" id="btnSiguiente" onclick="cambiarPagina(1)">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Sistema de Gestión de Tubos - Transforma Srl</p>
+            <div class="copyright">
+                <p>&copy;  Versión 2.0 | Historial de Actividades</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3002'; // Puerto corregido
+
+        // Datos
+        let historialCompleto = [];
+        let historialFiltrado = [];
+        let paginaActual = 1;
+        const registrosPorPagina = 10;
+
+        // Menú hamburguesa
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Mostrar mensajes
+        function showMessage(message, type = 'success') {
+            const messageDiv = type === 'success' ? document.getElementById('successMsg') : document.getElementById('errorMsg');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Verificar autenticación y cargar datos
+        async function cargarHistorial() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const usuario = JSON.parse(user);
+
+            document.getElementById('userBadge').innerHTML = 
+                `<i class="fas fa-user-shield"></i> ${usuario.username} (${usuario.rol})`;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/historial`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    historialCompleto = await response.json();
+                } else if (response.status === 401) {
+                    logout();
+                    return;
+                } else {
+                    throw new Error('Error al cargar historial');
+                }
+
+                historialFiltrado = [...historialCompleto];
+                actualizarEstadisticas();
+                actualizarTablaHistorial();
+                
+            } catch (error) {
+                console.error('Error cargando historial:', error);
+                showMessage('Error de conexión al servidor. Usando datos de ejemplo.', 'error');
+                
+                // Usar datos de ejemplo si hay error de conexión
+                historialCompleto = [
+                    { fecha: '2024-01-15T10:30:25Z', usuario: 'admin', accion: 'login', descripcion: 'Inicio de sesión exitoso' },
+                    { fecha: '2024-01-15T14:20:10Z', usuario: 'admin', accion: 'actualizar_tubo', descripcion: 'Actualizado: Tubo PVC 6"', datos: { almacen: 100, enviados: 30, fallas: 2 } },
+                    { fecha: '2024-01-14T09:15:30Z', usuario: 'admin', accion: 'exportar_excel', descripcion: 'Exportación completa de datos a Excel' },
+                    { fecha: '2024-01-13T16:45:00Z', usuario: 'admin', accion: 'cambiar_password', descripcion: 'Contraseña cambiada para: cliente' },
+                    { fecha: '2024-01-12T11:20:15Z', usuario: 'cliente', accion: 'login', descripcion: 'Inicio de sesión exitoso' },
+                    { fecha: '2024-01-11T08:45:30Z', usuario: 'admin', accion: 'crear_usuario', descripcion: 'Nuevo usuario creado: supervisor (admin)' },
+                    { fecha: '2024-01-10T15:30:45Z', usuario: 'admin', accion: 'importar_excel', descripcion: 'Importación desde Excel: 8 registros procesados' },
+                    { fecha: '2024-01-09T13:15:20Z', usuario: 'admin', accion: 'actualizar_tubo', descripcion: 'Actualizado: Tubo PVC 8"', datos: { almacen: 80, enviados: 20, fallas: 1 } },
+                    { fecha: '2024-01-08T10:05:10Z', usuario: 'cliente', accion: 'login', descripcion: 'Inicio de sesión exitoso' },
+                    { fecha: '2024-01-07T16:50:35Z', usuario: 'admin', accion: 'actualizar_tubo', descripcion: 'Actualizado: Tubo Concreto 18"', datos: { almacen: 40, enviados: 10, fallas: 1 } }
+                ];
+                
+                historialFiltrado = [...historialCompleto];
+                actualizarEstadisticas();
+                actualizarTablaHistorial();
+            }
+        }
+
+        function actualizarEstadisticas() {
+            const totalEntradas = historialFiltrado.filter(h => h.accion.includes('actualizar') || h.accion.includes('crear')).length;
+            const totalSalidas = historialFiltrado.filter(h => h.accion.includes('exportar') || h.accion.includes('importar')).length;
+            const totalFallas = historialFiltrado.filter(h => h.descripcion?.includes('falla') || h.descripcion?.includes('Falla')).length;
+            const usuariosUnicos = [...new Set(historialFiltrado.map(h => h.usuario))].length;
+
+            document.getElementById('totalEntradas').textContent = totalEntradas;
+            document.getElementById('totalSalidas').textContent = totalSalidas;
+            document.getElementById('totalFallas').textContent = totalFallas;
+            document.getElementById('totalUsuarios').textContent = usuariosUnicos;
+        }
+
+        function actualizarTablaHistorial() {
+            const tabla = document.getElementById('tablaHistorial');
+            tabla.innerHTML = '';
+
+            // Calcular índices para la paginación
+            const inicio = (paginaActual - 1) * registrosPorPagina;
+            const fin = inicio + registrosPorPagina;
+            const registrosPagina = historialFiltrado.slice(inicio, fin);
+
+            registrosPagina.forEach(registro => {
+                const fecha = new Date(registro.fecha).toLocaleString();
+                let claseTipo = '';
+                let iconoTipo = '';
+                let textoAccion = '';
+
+                // Mapear acciones a tipos visuales
+                if (registro.accion.includes('login')) {
+                    claseTipo = 'sistema';
+                    iconoTipo = 'fa-sign-in-alt';
+                    textoAccion = 'LOGIN';
+                } else if (registro.accion.includes('actualizar')) {
+                    claseTipo = 'entrada';
+                    iconoTipo = 'fa-edit';
+                    textoAccion = 'ACTUALIZAR';
+                } else if (registro.accion.includes('exportar')) {
+                    claseTipo = 'salida';
+                    iconoTipo = 'fa-file-export';
+                    textoAccion = 'EXPORTAR';
+                } else if (registro.accion.includes('importar')) {
+                    claseTipo = 'entrada';
+                    iconoTipo = 'fa-file-import';
+                    textoAccion = 'IMPORTAR';
+                } else if (registro.accion.includes('crear')) {
+                    claseTipo = 'sistema';
+                    iconoTipo = 'fa-user-plus';
+                    textoAccion = 'CREAR USUARIO';
+                } else if (registro.accion.includes('cambiar')) {
+                    claseTipo = 'sistema';
+                    iconoTipo = 'fa-key';
+                    textoAccion = 'CAMBIAR PASS';
+                } else {
+                    claseTipo = 'sistema';
+                    iconoTipo = 'fa-cog';
+                    textoAccion = registro.accion.toUpperCase();
+                }
+
+                const elemento = registro.datos?.nombre || registro.descripcion?.split(':')[1]?.trim() || 'Sistema';
+                const cantidad = registro.datos ? 
+                    (registro.datos.almacen || registro.datos.cantidad || '-') : '-';
+
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td><strong>${fecha}</strong></td>
+                    <td>
+                        <span class="user-badge" style="background: rgba(39, 174, 96, 0.1); color: var(--dark-text); padding: 0.25rem 0.5rem;">
+                            <i class="fas fa-user"></i> ${registro.usuario}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="${claseTipo}">
+                            <i class="fas ${iconoTipo}"></i> ${textoAccion}
+                        </span>
+                    </td>
+                    <td><strong>${elemento}</strong></td>
+                    <td>${cantidad}</td>
+                    <td>${registro.descripcion}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="verDetalles('${registro.fecha}')" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tabla.appendChild(fila);
+            });
+
+            // Actualizar información de paginación
+            document.getElementById('registrosMostrados').textContent = registrosPagina.length;
+            document.getElementById('totalRegistros').textContent = historialFiltrado.length;
+            document.getElementById('paginaActual').textContent = paginaActual;
+
+            // Actualizar estado de botones de paginación
+            document.getElementById('btnAnterior').disabled = paginaActual === 1;
+            document.getElementById('btnSiguiente').disabled = fin >= historialFiltrado.length;
+        }
+
+        function aplicarFiltros() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+            const tipoMovimiento = document.getElementById('tipoMovimiento').value;
+            const usuario = document.getElementById('usuarioFiltro').value;
+            const textoBusqueda = document.getElementById('buscarTexto').value.toLowerCase();
+
+            historialFiltrado = historialCompleto.filter(registro => {
+                const fechaRegistro = new Date(registro.fecha).toISOString().split('T')[0];
+                
+                // Filtro por fecha
+                if (fechaInicio && fechaRegistro < fechaInicio) return false;
+                if (fechaFin && fechaRegistro > fechaFin) return false;
+                
+                // Filtro por tipo de movimiento
+                if (tipoMovimiento) {
+                    if (tipoMovimiento === 'entrada' && !registro.accion.includes('actualizar') && !registro.accion.includes('importar')) return false;
+                    if (tipoMovimiento === 'salida' && !registro.accion.includes('exportar')) return false;
+                    if (tipoMovimiento === 'falla' && !registro.descripcion?.toLowerCase().includes('falla')) return false;
+                    if (tipoMovimiento === 'sistema' && !registro.accion.includes('login') && !registro.accion.includes('crear') && !registro.accion.includes('cambiar')) return false;
+                }
+                
+                // Filtro por usuario
+                if (usuario && registro.usuario !== usuario) return false;
+                
+                // Filtro por texto de búsqueda
+                if (textoBusqueda && 
+                    !registro.descripcion.toLowerCase().includes(textoBusqueda) &&
+                    !registro.accion.toLowerCase().includes(textoBusqueda) &&
+                    !registro.usuario.toLowerCase().includes(textoBusqueda)) return false;
+                
+                return true;
+            });
+
+            paginaActual = 1;
+            actualizarEstadisticas();
+            actualizarTablaHistorial();
+            showMessage(`Filtros aplicados: ${historialFiltrado.length} registros encontrados`);
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('fechaInicio').value = '';
+            document.getElementById('fechaFin').value = '';
+            document.getElementById('tipoMovimiento').value = '';
+            document.getElementById('usuarioFiltro').value = '';
+            document.getElementById('buscarTexto').value = '';
+            
+            historialFiltrado = [...historialCompleto];
+            paginaActual = 1;
+            actualizarEstadisticas();
+            actualizarTablaHistorial();
+            showMessage('Filtros limpiados correctamente');
+        }
+
+        function cambiarPagina(direccion) {
+            const totalPaginas = Math.ceil(historialFiltrado.length / registrosPorPagina);
+            const nuevaPagina = paginaActual + direccion;
+            
+            if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+                paginaActual = nuevaPagina;
+                actualizarTablaHistorial();
+            }
+        }
+
+        async function exportarHistorial() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Mostrar loading
+                const originalText = event.target.innerHTML;
+                event.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
+                event.target.disabled = true;
+
+                const response = await fetch(`${API_BASE_URL}/api/exportar-excel`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Crear blob y descargar
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `historial_tubos_${new Date().toISOString().split('T')[0]}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showMessage('✅ Historial exportado exitosamente a Excel');
+                } else {
+                    throw new Error('Error en la exportación');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('❌ Error al exportar el historial', 'error');
+            } finally {
+                // Restaurar botón
+                event.target.innerHTML = '<i class="fas fa-file-excel"></i> Exportar Excel';
+                event.target.disabled = false;
+            }
+        }
+
+        function imprimirHistorial() {
+            window.print();
+        }
+
+        function limpiarHistorial() {
+            if (confirm('¿Estás seguro de que deseas limpiar todo el historial? Esta acción no se puede deshacer.')) {
+                if (confirm('⚠️ Esta acción eliminará permanentemente todos los registros. ¿Continuar?')) {
+                    showMessage('🧹 Historial limpiado exitosamente (en una implementación real, esto eliminaría los registros)');
+                    // En una implementación real, aquí haríamos una llamada DELETE al backend
+                    historialCompleto = [];
+                    historialFiltrado = [];
+                    actualizarEstadisticas();
+                    actualizarTablaHistorial();
+                }
+            }
+        }
+
+        function verDetalles(fecha) {
+            const registro = historialCompleto.find(h => h.fecha === fecha);
+            if (registro) {
+                const detalles = `
+                    <strong>Detalles del Registro:</strong><br><br>
+                    <strong>Fecha y Hora:</strong> ${new Date(registro.fecha).toLocaleString()}<br>
+                    <strong>Usuario:</strong> ${registro.usuario}<br>
+                    <strong>Acción:</strong> ${registro.accion.toUpperCase()}<br>
+                    <strong>Descripción:</strong> ${registro.descripcion}<br>
+                    <strong>Datos Adicionales:</strong> ${JSON.stringify(registro.datos || {}, null, 2)}
+                `;
+                alert(detalles);
+            }
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', cargarHistorial);
+
+        // Solo para desarrollo
+        console.log('📋 Historial conectado al backend en:', API_BASE_URL);
+    </script>
+</body>
+</html>

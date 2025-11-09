@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Sistema de Gestión de Tubos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #27ae60;
+            --accent: #ffffff;
+            --light-bg: #f8f9fa;
+            --dark-text: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Header y Navegación */
+        header {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: var(--accent);
+            margin-bottom: 4px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('transforma.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: var(--accent);
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+            margin-top: 70px;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin: 0 auto 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: var(--accent);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid var(--secondary);
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            background-color: transparent;
+            color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--accent);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--accent);
+            color: var(--primary);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary);
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: var(--accent);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--accent);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-column a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--secondary);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--primary);
+                padding: 1rem 0;
+                box-shadow: var(--shadow);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .hero {
+                padding: 8rem 1rem 4rem;
+                min-height: 70vh;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .features {
+                padding: 3rem 1rem;
+            }
+            
+            .btn {
+                padding: 0.7rem 1.5rem;
+                margin: 0.3rem;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; opacity: 0; }
+        .delay-2 { animation-delay: 0.4s; opacity: 0; }
+        .delay-3 { animation-delay: 0.6s; opacity: 0; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-container">
+                <img src="logop.jpg" alt="Logo Empresa" class="logo">
+                <div class="brand-name">Transforma Srl</div>
+            </div>
+            
+            <nav>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                    <!-- El botón de Panel/Login se insertará dinámicamente aquí -->
+                    <div id="authSection">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                    <a href="#features"><i class="fas fa-cogs"></i> Funcionalidades</a>
+                    <a href="#contact"><i class="fas fa-envelope"></i> Contacto</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content fade-in">
+            <h1>Sistema de Gestión de Tubos</h1>
+            <p>La solución profesional para el control de inventario, gestión de pedidos y administración de productos de plomería. Optimiza tu negocio con nuestra plataforma.</p>
+            <div class="hero-buttons" id="heroAuthSection">
+                <!-- Los botones del hero se actualizarán dinámicamente -->
+                <a href="login.html" class="btn" id="heroLoginBtn"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+                <a href="#features" class="btn btn-outline"><i class="fas fa-play-circle"></i> Conocer Más</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-title fade-in">
+            <h2>Funcionalidades Principales</h2>
+            <p>Descubre todo lo que nuestro sistema puede hacer por tu negocio</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card fade-in delay-1">
+                <div class="feature-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <h3>Gestión de Inventario</h3>
+                <p>Controla tu stock de tubos, accesorios y materiales de plomería con nuestro sistema intuitivo.</p>
+            </div>
+            
+            <div class="feature-card fade-in delay-2">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Reportes y Estadísticas</h3>
+                <p>Genera reportes detallados y visualiza estadísticas para tomar mejores decisiones de negocio.</p>
+            </div>
+            
+            <div class="feature-card fade-in delay-3">
+                <div class="feature-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h3>Gestión de Usuarios</h3>
+                <p>Administra diferentes roles de usuario con permisos específicos para cada área de tu empresa.</p>
+            </div>
+            
+            <div class="feature-card fade-in delay-1">
+                <div class="feature-icon">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <h3>Exportación a Excel</h3>
+                <p>Exporta tus datos de inventario y reportes a Excel para un análisis más detallado.</p>
+            </div>
+            
+            <div class="feature-card fade-in delay-2">
+                <div class="feature-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3>Historial Completo</h3>
+                <p>Mantén un registro detallado de todas las operaciones realizadas en el sistema.</p>
+            </div>
+            
+            <div class="feature-card fade-in delay-3">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Diseño Responsive</h3>
+                <p>Accede al sistema desde cualquier dispositivo: computadora, tablet o teléfono móvil.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Transforma Srl</h3>
+                <p>Sistema especializado en la gestión de inventario para empresas de plomería y materiales de construcción.</p>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/transforma.srl/" target="_blank" title="Síguenos en Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com/TransformaSRL?rdid=2l5tpWiJX8iAhO7V&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1EJNMrd3k9%2F" target="_blank" title="Síguenos en Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="login.html" id="footerLoginLink">Iniciar Sesión</a></li>
+                    <li><a href="#features">Funcionalidades</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contacto</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> Av. Villazon Km. 5 Calle Campo Verde Nro. 100, Cochabamba, Bolivia</li>
+                    <li><i class="fas fa-phone"></i> +591 62632017</li>
+                    <li><i class="fas fa-envelope"></i> info@ecogrupo.biz</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy;  Versión 2.0</p>
+        </div>
+    </footer>
+
+    <script>
+        // Verificar autenticación y actualizar interfaz
+        function verificarAutenticacion() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            const authSection = document.getElementById('authSection');
+            const heroAuthSection = document.getElementById('heroAuthSection');
+            const heroLoginBtn = document.getElementById('heroLoginBtn');
+            const footerLoginLink = document.getElementById('footerLoginLink');
+
+            if (token && user) {
+                const usuario = JSON.parse(user);
+                
+                // Actualizar navegación - SOLO el botón Panel
+                authSection.innerHTML = `
+                    <a href="${usuario.rol === 'admin' ? 'admin-dashboard.html' : 'cliente-dashboard.html'}">
+                        <i class="fas fa-tachometer-alt"></i> Panel
+                    </a>
+                `;
+
+                // Actualizar hero section
+                heroLoginBtn.style.display = 'none';
+                const panelBtn = document.createElement('a');
+                panelBtn.href = usuario.rol === 'admin' ? 'admin-dashboard.html' : 'cliente-dashboard.html';
+                panelBtn.className = 'btn';
+                panelBtn.innerHTML = `<i class="fas fa-tachometer-alt"></i> Ir al Panel`;
+                heroAuthSection.insertBefore(panelBtn, heroLoginBtn);
+
+                // Actualizar footer
+                footerLoginLink.innerHTML = '<i class="fas fa-tachometer-alt"></i> Ir al Panel';
+                footerLoginLink.href = usuario.rol === 'admin' ? 'admin-dashboard.html' : 'cliente-dashboard.html';
+
+            } else {
+                // Usuario no autenticado - mostrar botón de login
+                authSection.innerHTML = `
+                    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+                `;
+
+                // Asegurar que el botón de login esté visible en el hero
+                heroLoginBtn.style.display = 'inline-block';
+                
+                // Remover botón de panel si existe
+                const existingPanelBtn = heroAuthSection.querySelector('a[href*="dashboard"]');
+                if (existingPanelBtn) {
+                    existingPanelBtn.remove();
+                }
+
+                // Restaurar footer
+                footerLoginLink.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                footerLoginLink.href = 'login.html';
+            }
+        }
+
+        // Menú hamburguesa
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+        
+        // Animaciones al hacer scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.feature-card, .section-title').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Verificar autenticación al cargar la página
+        document.addEventListener('DOMContentLoaded', verificarAutenticacion);
+
+        // También verificar cuando cambie el localStorage (por si se cierra sesión en otra pestaña)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'token' || e.key === 'user') {
+                verificarAutenticacion();
+            }
+        });
+    </script>
+</body>
+</html>
