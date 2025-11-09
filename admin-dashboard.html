@@ -1526,7 +1526,10 @@
                 }
                 
                 const headers = data[0];
+                console.log("Headers encontrados:", headers);
+                
                 const indices = encontrarIndicesColumnas(headers);
+                console.log("Índices detectados:", indices);
                 
                 let totalAlmacen = 0;
                 let totalEnviados = 0;
@@ -1537,31 +1540,48 @@
                     const row = data[i];
                     if (!row || row.length === 0) continue;
                     
+                    console.log(`Procesando fila ${i}:`, row);
+                    
                     // Sumar valores de cada columna si existen
-                    if (indices.stock !== -1 && !isNaN(row[indices.stock])) {
-                        totalAlmacen += parseFloat(row[indices.stock]) || 0;
+                    if (indices.stock !== -1 && row[indices.stock] !== undefined && row[indices.stock] !== null) {
+                        const valorStock = parseFloat(row[indices.stock]);
+                        if (!isNaN(valorStock)) {
+                            totalAlmacen += valorStock;
+                            console.log(`Stock en fila ${i}: ${valorStock}`);
+                        }
                     }
                     
-                    if (indices.enviados !== -1 && !isNaN(row[indices.enviados])) {
-                        totalEnviados += parseFloat(row[indices.enviados]) || 0;
+                    if (indices.enviados !== -1 && row[indices.enviados] !== undefined && row[indices.enviados] !== null) {
+                        const valorEnviados = parseFloat(row[indices.enviados]);
+                        if (!isNaN(valorEnviados)) {
+                            totalEnviados += valorEnviados;
+                            console.log(`Enviados en fila ${i}: ${valorEnviados}`);
+                        }
                     }
                     
-                    if (indices.fallas !== -1 && !isNaN(row[indices.fallas])) {
-                        totalFallas += parseFloat(row[indices.fallas]) || 0;
+                    if (indices.fallas !== -1 && row[indices.fallas] !== undefined && row[indices.fallas] !== null) {
+                        const valorFallas = parseFloat(row[indices.fallas]);
+                        if (!isNaN(valorFallas)) {
+                            totalFallas += valorFallas;
+                            console.log(`Fallas en fila ${i}: ${valorFallas}`);
+                        }
                     }
                 }
+                
+                // Calcular disponible real
+                const totalDisponible = totalAlmacen - totalFallas;
                 
                 // Actualizar la interfaz
                 document.getElementById('totalAlmacen').textContent = Math.round(totalAlmacen).toLocaleString();
                 document.getElementById('totalEnviados').textContent = Math.round(totalEnviados).toLocaleString();
                 document.getElementById('totalFallas').textContent = Math.round(totalFallas).toLocaleString();
-                document.getElementById('totalDisponible').textContent = Math.round(totalAlmacen - totalFallas).toLocaleString();
+                document.getElementById('totalDisponible').textContent = Math.round(totalDisponible).toLocaleString();
                 
-                console.log("Estadísticas actualizadas:", {
+                console.log("Estadísticas finales:", {
                     almacen: totalAlmacen,
                     enviados: totalEnviados,
                     fallas: totalFallas,
-                    disponible: totalAlmacen - totalFallas
+                    disponible: totalDisponible
                 });
 
             } catch (error) {
@@ -1570,7 +1590,7 @@
             }
         }
 
-        // Encontrar índices de columnas automáticamente
+        // MEJORADA: Encontrar índices de columnas automáticamente
         function encontrarIndicesColumnas(headers) {
             const indices = {
                 stock: -1,
@@ -1578,37 +1598,63 @@
                 fallas: -1
             };
             
-            if (!headers || !Array.isArray(headers)) return indices;
+            if (!headers || !Array.isArray(headers)) {
+                console.log("Headers no válidos:", headers);
+                return indices;
+            }
+            
+            console.log("Buscando columnas en headers:", headers);
             
             headers.forEach((header, index) => {
                 if (!header) return;
                 
                 const headerStr = header.toString().toLowerCase().trim();
+                console.log(`Analizando header[${index}]: "${headerStr}"`);
                 
                 // Buscar coincidencias para stock
                 if (columnMapping.stock.some(term => headerStr.includes(term))) {
                     indices.stock = index;
+                    console.log(`✓ Encontrada columna STOCK en índice ${index}`);
                 }
                 // Buscar coincidencias para enviados
                 else if (columnMapping.enviados.some(term => headerStr.includes(term))) {
                     indices.enviados = index;
+                    console.log(`✓ Encontrada columna ENVIADOS en índice ${index}`);
                 }
                 // Buscar coincidencias para fallas
                 else if (columnMapping.fallas.some(term => headerStr.includes(term))) {
                     indices.fallas = index;
+                    console.log(`✓ Encontrada columna FALLAS en índice ${index}`);
                 }
             });
             
-            console.log("Índices encontrados:", indices);
+            // Si no se encontraron automáticamente, usar índices por defecto basados en datos de ejemplo
+            if (indices.stock === -1 && headers.length >= 3) {
+                console.log("No se encontró columna STOCK automáticamente, usando índice por defecto 2");
+                indices.stock = 2;
+            }
+            
+            if (indices.enviados === -1 && headers.length >= 4) {
+                console.log("No se encontró columna ENVIADOS automáticamente, usando índice por defecto 3");
+                indices.enviados = 3;
+            }
+            
+            if (indices.fallas === -1 && headers.length >= 5) {
+                console.log("No se encontró columna FALLAS automáticamente, usando índice por defecto 4");
+                indices.fallas = 4;
+            }
+            
+            console.log("Índices finales encontrados:", indices);
             return indices;
         }
 
-        // Resetear estadísticas a cero
+        // MEJORADA: Resetear estadísticas a cero
         function resetearEstadisticas() {
             document.getElementById('totalAlmacen').textContent = '0';
             document.getElementById('totalEnviados').textContent = '0';
             document.getElementById('totalFallas').textContent = '0';
             document.getElementById('totalDisponible').textContent = '0';
+            console.log("Estadísticas reseteadas a cero");
         }
 
         // Importar archivo Excel - CORREGIDO
