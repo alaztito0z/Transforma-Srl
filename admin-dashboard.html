@@ -988,7 +988,7 @@
         };
 
         // =============================================
-        // GESTIÓN DE USUARIOS - CÓDIGO CORREGIDO
+        // GESTIÓN DE USUARIOS
         // =============================================
 
         // Inicializar usuarios por defecto si no existen
@@ -1229,91 +1229,104 @@
         }
 
         // =============================================
-        // FUNCIONES EXISTENTES (se mantienen igual)
+        // FUNCIONES DE EXCEL Y ESTADÍSTICAS CORREGIDAS
         // =============================================
 
-        // Inicializar Handsontable - CONFIGURACIÓN COMPLETAMENTE CORREGIDA
-        function inicializarExcel() {
-            const container = document.getElementById('excelContainer');
-            const loadingElement = document.getElementById('excelLoading');
+        // Inicializar Handsontable - CONFIGURACIÓN PARA COLUMNAS ILIMITADAS
+        // Inicializar Handsontable - CON MEJOR MANEJO DE ERRORES
+function inicializarExcel() {
+    const container = document.getElementById('excelContainer');
+    const loadingElement = document.getElementById('excelLoading');
+    
+    if (!container) {
+        console.error("No se encontró el contenedor de Excel");
+        return;
+    }
+    
+    loadingElement.classList.add('active');
+    container.style.display = 'none';
+
+    console.log("Inicializando Handsontable para columnas ilimitadas...");
+
+    try {
+        // DATOS INICIALES MÍNIMOS
+        const initialData = [
+            ['ID', 'Producto', 'Stock', 'Enviados', 'Fallas', 'Categoría'],
+            [1, 'Tubo PVC 4"', 100, 25, 5, 'PVC'],
+            [2, 'Tubo Acero 2"', 50, 15, 2, 'Acero'],
+            [3, 'Tubo Cobre 1"', 75, 30, 3, 'Cobre']
+        ];
+
+        // CONFIGURACIÓN PARA COLUMNAS ILIMITADAS
+        hot = new Handsontable(container, {
+            data: initialData,
+            licenseKey: 'non-commercial-and-evaluation',
+            rowHeaders: true,
+            colHeaders: true,
+            height: 500,
+            width: '100%',
             
-            loadingElement.classList.add('active');
-            container.style.display = 'none';
-
-            console.log("Inicializando Handsontable...");
-
-            // DATOS INICIALES CON COLUMNAS CLARAS
-            const initialData = [
-                ['ID', 'Producto', 'Stock', 'Enviados', 'Fallas', 'Categoría'],
-                [1, 'Tubo PVC 4"', 100, 25, 5, 'PVC'],
-                [2, 'Tubo Acero 2"', 50, 15, 2, 'Acero'],
-                [3, 'Tubo Cobre 1"', 75, 30, 3, 'Cobre'],
-                ['', '', '', '', '', ''] // Fila vacía para nuevas entradas
-            ];
-
-            // CONFIGURACIÓN SIMPLIFICADA Y FUNCIONAL PARA EDICIÓN
-            hot = new Handsontable(container, {
-                data: initialData,
-                licenseKey: 'non-commercial-and-evaluation',
-                rowHeaders: true,
-                colHeaders: true,
-                height: 500,
-                width: '100%',
-                
-                // CONFIGURACIÓN CLAVE PARA EDICIÓN
-                columns: [
-                    { type: 'numeric' },
-                    { type: 'text' },
-                    { type: 'numeric' },
-                    { type: 'numeric' },
-                    { type: 'numeric' },
-                    { type: 'text' }
-                ],
-                
-                // HABILITAR TODAS LAS FUNCIONALIDADES DE EDICIÓN
-                contextMenu: true,
-                manualRowResize: true,
-                manualColumnResize: true,
-                manualRowMove: true,
-                manualColumnMove: true,
-                filters: true,
-                dropdownMenu: true,
-                columnSorting: true,
-                stretchH: 'all',
-                minSpareRows: 1,
-                enterMoves: { row: 1, col: 0 },
-                tabMoves: { row: 0, col: 1 },
-                
-                // PERMITIR INSERTAR Y ELIMINAR
-                allowInsertRow: true,
-                allowInsertColumn: true,
-                allowRemoveRow: true,
-                allowRemoveColumn: true,
-                
-                // EVENTOS PARA EDIICIÓN - ACTUALIZAR ESTADÍSTICAS EN TIEMPO REAL
-                afterChange: function(changes, source) {
-                    if (source === 'edit' || source === 'autofill' || source === 'paste') {
-                        console.log('Cambios detectados:', changes);
-                        actualizarEstadisticas();
-                        guardarEnLocalStorage();
-                    }
-                },
-                
-                afterSelection: function(row, col, row2, col2) {
-                    actualizarBarraFormulas(row, col);
-                },
-                
-                afterRender: function() {
-                    console.log("Handsontable renderizado correctamente");
-                    loadingElement.classList.remove('active');
-                    container.style.display = 'block';
-                    // Actualizar estadísticas después del renderizado inicial
-                    setTimeout(actualizarEstadisticas, 100);
+            // CONFIGURACIÓN CLAVE PARA COLUMNAS DINÁMICAS
+            columns: function(column) {
+                return {
+                    type: 'text'
+                };
+            },
+            
+            // HABILITAR FUNCIONALIDADES
+            contextMenu: true,
+            manualRowResize: true,
+            manualColumnResize: true,
+            manualRowMove: true,
+            manualColumnMove: true,
+            filters: true,
+            dropdownMenu: true,
+            columnSorting: true,
+            stretchH: 'all',
+            minSpareRows: 1,
+            minSpareCols: 1,
+            enterMoves: { row: 1, col: 0 },
+            tabMoves: { row: 0, col: 1 },
+            allowInsertRow: true,
+            allowInsertColumn: true,
+            allowRemoveRow: true,
+            allowRemoveColumn: true,
+            autoColumnSize: true,
+            
+            // EVENTOS
+            afterChange: function(changes, source) {
+                if (source === 'edit' || source === 'autofill' || source === 'paste') {
+                    console.log('Cambios detectados:', changes);
+                    actualizarEstadisticas();
+                    guardarEnLocalStorage();
                 }
-            });
+            },
+            
+            afterSelection: function(row, col, row2, col2) {
+                actualizarBarraFormulas(row, col);
+            },
+            
+            afterRender: function() {
+                console.log("Handsontable renderizado correctamente");
+                console.log("Columnas totales:", this.countCols());
+                console.log("Filas totales:", this.countRows());
+                loadingElement.classList.remove('active');
+                container.style.display = 'block';
+                
+                setTimeout(actualizarEstadisticas, 100);
+            }
+        });
 
-            cargarDesdeLocalStorage();
-        }
+        console.log("✅ Handsontable inicializado correctamente");
+        cargarDesdeLocalStorage();
+        
+    } catch (error) {
+        console.error('Error inicializando Handsontable:', error);
+        loadingElement.classList.remove('active');
+        container.style.display = 'block';
+        showMessage('❌ Error inicializando la tabla Excel', 'error');
+    }
+}
 
         // Actualizar barra de fórmulas
         function actualizarBarraFormulas(row, col) {
@@ -1332,7 +1345,7 @@
             }
         }
 
-        // Aplicar fórmula a la celda seleccionada - CORREGIDO
+        // Aplicar fórmula a la celda seleccionada
         function aplicarFormula() {
             const formulaInput = document.getElementById('formulaInput');
             const formula = formulaInput.value.trim();
@@ -1372,7 +1385,7 @@
             }
         }
 
-        // Evaluar fórmulas matemáticas simples - MEJORADO
+        // Evaluar fórmulas matemáticas simples
         function evaluarFormula(formula) {
             console.log("Evaluando fórmula:", formula);
             
@@ -1422,7 +1435,7 @@
             }
         }
 
-        // Ejecutar operaciones matemáticas - COMPLETAMENTE CORREGIDO
+        // Ejecutar operaciones matemáticas
         function ejecutarOperacion(operacion) {
             const selected = hot.getSelected();
             if (!selected || selected.length === 0) {
@@ -1514,13 +1527,17 @@
             }
         }
 
-        // FUNCIÓN MEJORADA: Actualizar estadísticas en tiempo real
+        // FUNCIÓN CORREGIDA: Actualizar estadísticas en tiempo real
         function actualizarEstadisticas() {
             try {
                 const data = hot.getData();
-                console.log("Actualizando estadísticas con datos:", data);
+                console.log("=== ACTUALIZANDO ESTADÍSTICAS ===");
+                console.log("Total filas:", data.length);
+                console.log("Total columnas:", data[0] ? data[0].length : 0);
+                console.log("Datos completos:", data);
                 
                 if (!data || data.length < 2) {
+                    console.log("No hay suficientes datos para calcular estadísticas");
                     resetearEstadisticas();
                     return;
                 }
@@ -1534,12 +1551,14 @@
                 let totalAlmacen = 0;
                 let totalEnviados = 0;
                 let totalFallas = 0;
+                let filasProcesadas = 0;
                 
                 // Procesar todas las filas de datos (excluyendo encabezados)
                 for (let i = 1; i < data.length; i++) {
                     const row = data[i];
                     if (!row || row.length === 0) continue;
                     
+                    filasProcesadas++;
                     console.log(`Procesando fila ${i}:`, row);
                     
                     // Sumar valores de cada columna si existen
@@ -1547,7 +1566,7 @@
                         const valorStock = parseFloat(row[indices.stock]);
                         if (!isNaN(valorStock)) {
                             totalAlmacen += valorStock;
-                            console.log(`Stock en fila ${i}: ${valorStock}`);
+                            console.log(`✓ Stock en fila ${i}: ${valorStock} (columna ${indices.stock})`);
                         }
                     }
                     
@@ -1555,7 +1574,7 @@
                         const valorEnviados = parseFloat(row[indices.enviados]);
                         if (!isNaN(valorEnviados)) {
                             totalEnviados += valorEnviados;
-                            console.log(`Enviados en fila ${i}: ${valorEnviados}`);
+                            console.log(`✓ Enviados en fila ${i}: ${valorEnviados} (columna ${indices.enviados})`);
                         }
                     }
                     
@@ -1563,7 +1582,7 @@
                         const valorFallas = parseFloat(row[indices.fallas]);
                         if (!isNaN(valorFallas)) {
                             totalFallas += valorFallas;
-                            console.log(`Fallas en fila ${i}: ${valorFallas}`);
+                            console.log(`✓ Fallas en fila ${i}: ${valorFallas} (columna ${indices.fallas})`);
                         }
                     }
                 }
@@ -1577,7 +1596,9 @@
                 document.getElementById('totalFallas').textContent = Math.round(totalFallas).toLocaleString();
                 document.getElementById('totalDisponible').textContent = Math.round(totalDisponible).toLocaleString();
                 
-                console.log("Estadísticas finales:", {
+                console.log("=== ESTADÍSTICAS FINALIZADAS ===");
+                console.log("Filas procesadas:", filasProcesadas);
+                console.log("Resultados:", {
                     almacen: totalAlmacen,
                     enviados: totalEnviados,
                     fallas: totalFallas,
@@ -1590,7 +1611,7 @@
             }
         }
 
-        // MEJORADA: Encontrar índices de columnas automáticamente
+        // FUNCIÓN MEJORADA: Encontrar índices de columnas automáticamente
         function encontrarIndicesColumnas(headers) {
             const indices = {
                 stock: -1,
@@ -1603,52 +1624,54 @@
                 return indices;
             }
             
-            console.log("Buscando columnas en headers:", headers);
+            console.log("=== BUSCANDO COLUMNAS EN HEADERS ===");
+            console.log("Total de columnas:", headers.length);
+            console.log("Headers completos:", headers);
             
             headers.forEach((header, index) => {
                 if (!header) return;
                 
                 const headerStr = header.toString().toLowerCase().trim();
-                console.log(`Analizando header[${index}]: "${headerStr}"`);
                 
                 // Buscar coincidencias para stock
                 if (columnMapping.stock.some(term => headerStr.includes(term))) {
                     indices.stock = index;
-                    console.log(`✓ Encontrada columna STOCK en índice ${index}`);
+                    console.log(`✅ COLUMNA STOCK DETECTADA: "${headerStr}" en índice ${index}`);
                 }
                 // Buscar coincidencias para enviados
                 else if (columnMapping.enviados.some(term => headerStr.includes(term))) {
                     indices.enviados = index;
-                    console.log(`✓ Encontrada columna ENVIADOS en índice ${index}`);
+                    console.log(`✅ COLUMNA ENVIADOS DETECTADA: "${headerStr}" en índice ${index}`);
                 }
                 // Buscar coincidencias para fallas
                 else if (columnMapping.fallas.some(term => headerStr.includes(term))) {
                     indices.fallas = index;
-                    console.log(`✓ Encontrada columna FALLAS en índice ${index}`);
+                    console.log(`✅ COLUMNA FALLAS DETECTADA: "${headerStr}" en índice ${index}`);
                 }
             });
             
-            // Si no se encontraron automáticamente, usar índices por defecto basados en datos de ejemplo
+            // Si no se encontraron automáticamente, usar índices por defecto
             if (indices.stock === -1 && headers.length >= 3) {
-                console.log("No se encontró columna STOCK automáticamente, usando índice por defecto 2");
+                console.log("⚠️ No se encontró columna STOCK automáticamente, usando índice por defecto 2");
                 indices.stock = 2;
             }
             
             if (indices.enviados === -1 && headers.length >= 4) {
-                console.log("No se encontró columna ENVIADOS automáticamente, usando índice por defecto 3");
+                console.log("⚠️ No se encontró columna ENVIADOS automáticamente, usando índice por defecto 3");
                 indices.enviados = 3;
             }
             
             if (indices.fallas === -1 && headers.length >= 5) {
-                console.log("No se encontró columna FALLAS automáticamente, usando índice por defecto 4");
+                console.log("⚠️ No se encontró columna FALLAS automáticamente, usando índice por defecto 4");
                 indices.fallas = 4;
             }
             
-            console.log("Índices finales encontrados:", indices);
+            console.log("=== RESULTADO DE BÚSQUEDA ===");
+            console.log("Índices finales:", indices);
             return indices;
         }
 
-        // MEJORADA: Resetear estadísticas a cero
+        // Resetear estadísticas a cero
         function resetearEstadisticas() {
             document.getElementById('totalAlmacen').textContent = '0';
             document.getElementById('totalEnviados').textContent = '0';
@@ -1657,114 +1680,140 @@
             console.log("Estadísticas reseteadas a cero");
         }
 
-        // Importar archivo Excel - CORREGIDO
-        function importarExcel() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
+        // Importar archivo Excel - CORREGIDO PARA MÚLTIPLES COLUMNAS
+        // Importar archivo Excel - VERSIÓN CORREGIDA
+function importarExcel() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showMessage('❌ Por favor selecciona un archivo Excel', 'error');
+        return;
+    }
+
+    console.log("Iniciando importación del archivo:", file.name);
+
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importando...';
+    button.disabled = true;
+
+    const loadingElement = document.getElementById('excelLoading');
+    const container = document.getElementById('excelContainer');
+    loadingElement.classList.add('active');
+    container.style.display = 'none';
+
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            console.log("Archivo leído correctamente");
             
-            if (!file) {
-                showMessage('❌ Por favor selecciona un archivo Excel', 'error');
-                return;
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            console.log("Workbook cargado, hojas:", workbook.SheetNames);
+            
+            if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+                throw new Error('El archivo no contiene hojas de cálculo');
+            }
+            
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            console.log("Procesando hoja:", firstSheetName);
+            
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+                header: 1, 
+                defval: '',
+                blankrows: true
+            });
+
+            console.log("Datos convertidos a JSON, filas:", jsonData.length);
+            console.log("Columnas en la primera fila:", jsonData[0] ? jsonData[0].length : 0);
+
+            if (!jsonData || jsonData.length === 0) {
+                throw new Error('No se pudieron extraer datos del archivo');
             }
 
-            console.log("Iniciando importación del archivo:", file.name);
+            // Limpiar filas vacías al final
+            while (jsonData.length > 0 && 
+                   jsonData[jsonData.length - 1].every(cell => 
+                       cell === '' || cell === null || cell === undefined)) {
+                jsonData.pop();
+            }
 
-            const button = event.target;
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importando...';
-            button.disabled = true;
+            if (jsonData.length === 0) {
+                throw new Error('El archivo está vacío después de limpiar filas vacías');
+            }
 
-            const loadingElement = document.getElementById('excelLoading');
-            const container = document.getElementById('excelContainer');
-            loadingElement.classList.add('active');
-            container.style.display = 'none';
-
-            const reader = new FileReader();
+            console.log("Cargando datos en Handsontable...");
             
-            reader.onload = function(e) {
-                try {
-                    console.log("Archivo leído correctamente");
-                    
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    
-                    console.log("Workbook cargado, hojas:", workbook.SheetNames);
-                    
-                    if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-                        throw new Error('El archivo no contiene hojas de cálculo');
-                    }
-                    
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    console.log("Procesando hoja:", firstSheetName);
-                    
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-                        header: 1, 
-                        defval: '',
-                        blankrows: true
-                    });
+            // VERIFICAR QUE hot EXISTA ANTES DE USARLO
+            if (!hot) {
+                console.error("Handsontable no está inicializado");
+                throw new Error('Error: La tabla no está inicializada correctamente');
+            }
 
-                    console.log("Datos convertidos a JSON, filas:", jsonData.length);
+            console.log("Handsontable está inicializado, cargando datos...");
 
-                    if (!jsonData || jsonData.length === 0) {
-                        throw new Error('No se pudieron extraer datos del archivo');
-                    }
-
-                    while (jsonData.length > 0 && 
-                           jsonData[jsonData.length - 1].every(cell => 
-                               cell === '' || cell === null || cell === undefined)) {
-                        jsonData.pop();
-                    }
-
-                    if (jsonData.length === 0) {
-                        throw new Error('El archivo está vacío después de limpiar filas vacías');
-                    }
-
-                    console.log("Cargando datos en Handsontable...");
-                    
-                    // Cargar datos en la tabla existente
-                    hot.loadData(jsonData);
-                    
-                    currentFile = file;
-                    document.getElementById('excelStatus').style.display = 'flex';
-                    document.getElementById('fileName').textContent = file.name;
-                    
-                    setTimeout(() => {
-                        showTabProgramaticamente('inventario');
-                    }, 500);
-                    
-                    // Actualizar estadísticas después de cargar los datos
-                    setTimeout(actualizarEstadisticas, 1000);
-                    
-                    guardarEnLocalStorage();
-                    
-                    showMessage(`✅ Archivo Excel "${file.name}" importado exitosamente. ${jsonData.length} filas cargadas.`);
-                    
-                } catch (error) {
-                    console.error('Error procesando Excel:', error);
-                    showMessage('❌ Error al procesar el archivo Excel: ' + error.message, 'error');
-                } finally {
-                    button.innerHTML = '<i class="fas fa-upload"></i> Importar Archivo Excel';
-                    button.disabled = false;
-                    fileInput.value = '';
-                    loadingElement.classList.remove('active');
-                    container.style.display = 'block';
+            // MÉTODO SEGURO: Usar loadData en lugar de updateSettings
+            hot.loadData(jsonData);
+            
+            // Forzar actualización de la configuración si es necesario
+            setTimeout(() => {
+                if (hot) {
+                    hot.render();
+                    console.log("✅ Tabla renderizada correctamente");
+                    console.log("Columnas totales:", hot.countCols());
+                    console.log("Filas totales:", hot.countRows());
                 }
-            };
-            
-            reader.onerror = function(error) {
-                console.error('Error leyendo archivo:', error);
-                showMessage('❌ Error al leer el archivo. Puede que esté corrupto.', 'error');
-                button.innerHTML = '<i class="fas fa-upload"></i> Importar Archivo Excel';
-                button.disabled = false;
-                loadingElement.classList.remove('active');
-                container.style.display = 'block';
-            };
-            
-            reader.readAsArrayBuffer(file);
-        }
+            }, 100);
 
+            currentFile = file;
+            document.getElementById('excelStatus').style.display = 'flex';
+            document.getElementById('fileName').textContent = file.name;
+            
+            // Cambiar a pestaña de inventario
+            setTimeout(() => {
+                showTabProgramaticamente('inventario');
+            }, 500);
+            
+            // Actualizar estadísticas después de cargar los datos
+            setTimeout(() => {
+                if (hot) {
+                    actualizarEstadisticas();
+                    console.log("Estadísticas actualizadas después de importar");
+                }
+            }, 1500);
+            
+            guardarEnLocalStorage();
+            
+            showMessage(`✅ Archivo Excel "${file.name}" importado exitosamente. ${jsonData.length} filas, ${jsonData[0].length} columnas cargadas.`);
+            
+        } catch (error) {
+            console.error('Error procesando Excel:', error);
+            showMessage('❌ Error al procesar el archivo Excel: ' + error.message, 'error');
+        } finally {
+            button.innerHTML = '<i class="fas fa-upload"></i> Importar Archivo Excel';
+            button.disabled = false;
+            fileInput.value = '';
+            loadingElement.classList.remove('active');
+            container.style.display = 'block';
+        }
+    };
+    
+    reader.onerror = function(error) {
+        console.error('Error leyendo archivo:', error);
+        showMessage('❌ Error al leer el archivo. Puede que esté corrupto.', 'error');
+        button.innerHTML = '<i class="fas fa-upload"></i> Importar Archivo Excel';
+        button.disabled = false;
+        loadingElement.classList.remove('active');
+        container.style.display = 'block';
+    };
+    
+    reader.readAsArrayBuffer(file);
+}
         // Función para cambiar pestañas programáticamente
         function showTabProgramaticamente(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1857,7 +1906,7 @@
             }
         }
 
-        // Quitar tabla - FUNCIÓN CORREGIDA
+        // Quitar tabla
         function quitarTabla() {
             if (confirm('¿Estás seguro de que deseas quitar la tabla? Se perderán los datos no guardados.')) {
                 // Limpiar datos
